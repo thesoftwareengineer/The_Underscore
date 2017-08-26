@@ -1,10 +1,11 @@
 const _ = {
-  first : function(array) {
-    if(array instanceOf Array) {
+  first: function(array) {
+    if (array instanceof Array) {
       if (array.length != 0) {
-          return array[0];
+        return array[0];
+      }
+      return void 0;
     }
-    return undefined;
   }
 };
 
