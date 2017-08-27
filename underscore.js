@@ -4,7 +4,7 @@ const _ = module.exports = {
       n = 1;
     }
     if (array instanceof Array) {
-      if (n > array.length && array.length != 0) {
+      if (n > array.length && array.length !== 0) {
         return array;
       }
       if (array.length >= n) {
@@ -28,8 +28,8 @@ const _ = module.exports = {
         }
         return array.slice(0, array.length - n);
       }
-      return void 0;
     }
+    return [];
   },
 
   last: function(array, n) {
@@ -37,6 +37,9 @@ const _ = module.exports = {
       n = 1;
     }
     if (array instanceof Array) {
+      if (n > array.length && array.length !== 0) {
+        return array;
+      }
       if (array.length !== 0 && array.length >= n) {
         if (n === 1) {
           return array.pop();
