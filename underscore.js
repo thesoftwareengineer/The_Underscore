@@ -4,6 +4,9 @@ const _ = module.exports = {
         n = 1;
     }
     if (array instanceof Array) {
+      if (n > array.length) {
+        return array;
+      }
       if (array.length !== 0 && array.length >= n) {
         if (n === 1){
             return array[0];
