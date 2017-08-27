@@ -1,15 +1,15 @@
 const _ = module.exports = {
   first: function(array, n) {
     if (!n) {
-        n = 1;
+      n = 1;
     }
     if (array instanceof Array) {
-      if (n > array.length) {
+      if (n > array.length && array.length != 0) {
         return array;
       }
-      if (array.length !== 0 && array.length >= n) {
-        if (n === 1){
-            return array[0];
+      if (array.length >= n) {
+        if (n === 1) {
+          return array[0];
         }
         return array.slice(0, n);
       }
@@ -17,13 +17,13 @@ const _ = module.exports = {
     }
   },
 
-  initial : function(array, n) {
-    if(!n) {
+  initial: function(array, n) {
+    if (!n) {
       n = 1;
     }
-    if(array instanceof Array) {
-      if(array.length !== 0 && array.length >= n) {
-        if(n === 1) {
+    if (array instanceof Array) {
+      if (array.length !== 0 && array.length >= n) {
+        if (n === 1) {
           return array.slice(0, array.length - 1);
         }
         return array.slice(0, array.length - n);
@@ -32,13 +32,13 @@ const _ = module.exports = {
     }
   },
 
-  last : function(array, n) {
-    if(!n) {
+  last: function(array, n) {
+    if (!n) {
       n = 1;
     }
-    if(array instanceof Array) {
-      if(array.length !== 0 && array.length >= n) {
-        if(n === 1) {
+    if (array instanceof Array) {
+      if (array.length !== 0 && array.length >= n) {
+        if (n === 1) {
           return array.pop();
         }
         return array.slice(n - 1, array.length);
