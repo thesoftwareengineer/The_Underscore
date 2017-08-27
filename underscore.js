@@ -48,5 +48,30 @@ const _ = module.exports = {
       }
       return void 0;
     }
+  },
+
+  rest: function(array, index) {
+    if (!index) {
+      index = 1;
+    }
+    if (array instanceof Array) {
+      return array.slice(index, array.length);
+    }
+    return [];
+  },
+
+  compact: function(array) {
+    if (array instanceof Array) {
+      return array.filter(function(n) {
+        if (n) {
+          return true;
+        }
+        return false;
+      });
+    }
+    return [];
+  },
+  flatten: function(array, [shallow]) {
+    return;
   }
 };
