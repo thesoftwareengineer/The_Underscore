@@ -76,14 +76,14 @@ const _ = module.exports = {
     if (array instanceof Array) {
       if (shallow) {
         for (var i = 0; i < array.length; i++) {
-          if (array[i] instanceof Array) {
-            newArr = newArr.concat(array[i]);
-          }
+          newArr = newArr.concat(array[i]);
         }
       } else {
         for (var i = 0; i < array.length; i++) {
           if (array[i] instanceof Array) {
             newArr = newArr.concat(this.flatten(array[i]));
+          } else {
+            newArr = newArr.concat(array[i]);
           }
         }
       }
