@@ -54,7 +54,9 @@ console.log(_.compact({}));
 console.log("\nTest case for flatten(array, [shallow])");
 console.log(_.flatten([10, 1, 3, 5, [12, 2, [23]]], true));
 console.log(_.flatten([10, 1, 0, 3, 5]));
-console.log(_.flatten([undefined], 10, 1, 3, 5]));
+console.log(_.flatten([
+  [undefined], 10, 1, 3, 5
+]));
 console.log(_.flatten(false));
 console.log(_.flatten([]));
 console.log(_.flatten(0));

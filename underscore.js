@@ -71,7 +71,23 @@ const _ = module.exports = {
     }
     return [];
   },
-  flatten: function(array, [shallow]) {
-    return;
+  flatten: function(array, shallow) {
+    var newArr = [];
+    if (array instanceof Array) {
+      if (shallow) {
+        for (var i = 0; i < array.length; i++) {
+          if (array[i] instanceof Array) {
+            newArr = newArr.concat(array[i]);
+          }
+        }
+      } else {
+        for (var i = 0; i < array.length; i++) {
+          if (array[i] instanceof Array) {
+            newArr = newArr.concat(this.flatten(array[i]));
+          }
+        }
+      }
+    }
+    return newArr;
   }
 };
