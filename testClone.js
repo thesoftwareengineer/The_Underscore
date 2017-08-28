@@ -81,3 +81,9 @@ console.log("\nText case for intersection(*arrays)");
 console.log(_.intersection([1, 2, 3], [101, 2, 1, 10], [2, 1]));
 console.log(_.intersection(undefined, [101, 2, 1, 10], [2, 1]));
 console.log(_.intersection([1, 2, 3], false, [2, 1]));
+
+//Test case for difference(*arrays)
+console.log("\nText case for difference(*arrays)");
+console.log(_.difference([1, 2, 3], [101, 2, 1, 10], [2, 1]));
+console.log(_.difference(undefined, [101, 2, 1, 10], [2, 1]));
+console.log(_.difference([1, 2, 3], false, [2, 1]));

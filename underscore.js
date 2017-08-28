@@ -134,5 +134,21 @@ const _ = module.exports = {
       }
     }
     return arr;
+  },
+
+  difference: function(arrays) {
+    if (!(arguments[0] instanceof Array)) {
+      return [];
+    }
+    var arr = arguments[0];
+    for (var i = 1; i < arguments.length; i++) {
+      const arg = arguments[i];
+      if (arg instanceof Array) {
+        arr = arr.filter(function(n) {
+          return arg.indexOf(n) === -1;
+        });
+      }
+    }
+    return arr;
   }
 };
