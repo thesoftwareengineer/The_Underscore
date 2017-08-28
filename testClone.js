@@ -68,3 +68,4 @@ console.log(_.flatten({}));
 console.log("\nTest case for without(array, *values)");
 console.log(_.without([1, 2, 1, 0, 3, 1, 4], 0, 1));
 console.log(_.without([1, 2, 1, 0, 3, 1, 4]));
+console.log(_.without(false));
