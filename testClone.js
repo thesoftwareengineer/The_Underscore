@@ -63,3 +63,8 @@ console.log(_.flatten(false));
 console.log(_.flatten([]));
 console.log(_.flatten(0));
 console.log(_.flatten({}));
+
+//Text case for without(array, *values)
+console.log("\nTest case for without(array, *values)");
+console.log(_.without([1, 2, 1, 0, 3, 1, 4], 0, 1));
+console.log(_.without([1, 2, 1, 0, 3, 1, 4]));
