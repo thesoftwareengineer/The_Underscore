@@ -103,5 +103,21 @@ const _ = module.exports = {
       return newArr;
     }
     return [];
+  },
+
+  union: function() {
+    var arr = [];
+    for (var i = 0; i < arguments.length; i++) {
+      if (arguments[i] instanceof Array) {
+        arr = arr.concat(arguments[i]);
+      }
+    }
+    var newArr = [];
+    for (i = 0; i < arr.length; i++) {
+      if (newArr.indexOf(arr[i]) === -1) {
+        newArr.push(arr[i]);
+      }
+    }
+    return newArr;
   }
 };

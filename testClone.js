@@ -69,3 +69,9 @@ console.log("\nTest case for without(array, *values)");
 console.log(_.without([1, 2, 1, 0, 3, 1, 4], 0, 1));
 console.log(_.without([1, 2, 1, 0, 3, 1, 4]));
 console.log(_.without(false));
+
+//Text case for union(array, *values)
+console.log("\nTest case for union(array, *values)");
+console.log(_.union([1, 2, 1, 0, 3, 1, 4], [0], [1, [22, 1], 3]));
+console.log(_.union([1, 2, 1, 0, 3, 1, 4]));
+console.log(_.union([1, 2], false));
