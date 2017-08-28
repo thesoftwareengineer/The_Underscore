@@ -73,3 +73,7 @@ console.log("\nTest case for union(array, *values)");
 console.log(_.union([1, 2, 1, 0, 3, 1, 4], [0], [1, [22, 1], 3]));
 console.log(_.union([1, 2, 1, 0, 3, 1, 4]));
 console.log(_.union([1, 2], false));
+
+//Test case for intersection(*arrays)
+console.log("\nText case for intersection(*arrays)");
+console.log(_.intersection([1, 2, 3], [101, 2, 1, 10], [2, 1]));

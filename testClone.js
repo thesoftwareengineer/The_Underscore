@@ -64,14 +64,18 @@ console.log(_.flatten([]));
 console.log(_.flatten(0));
 console.log(_.flatten({}));
 
-//Text case for without(array, *values)
+//Test case for without(array, *values)
 console.log("\nTest case for without(array, *values)");
 console.log(_.without([1, 2, 1, 0, 3, 1, 4], 0, 1));
 console.log(_.without([1, 2, 1, 0, 3, 1, 4]));
 console.log(_.without(false));
 
-//Text case for union(array, *values)
+//Test case for union(array, *values)
 console.log("\nTest case for union(array, *values)");
 console.log(_.union([1, 2, 1, 0, 3, 1, 4], [0], [1, [22, 1], 3]));
 console.log(_.union([1, 2, 1, 0, 3, 1, 4]));
 console.log(_.union([1, 2], false));
+
+//Test case for intersection(*arrays)
+console.log("\nText case for intersection(*arrays)");
+console.log(_.intersection([1, 2, 3], [101, 2, 1, 10], [2, 1]));
