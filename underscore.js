@@ -256,5 +256,27 @@ const _ = module.exports = {
       zipped.push(elm);
     }
     return zipped;
+  },
+
+  // Opposite of zip contains new arrays
+  // first which has first element of all
+  // other arrays and so on...
+  unzip: function(array) {
+    const unzipped = [];
+    const length = Math.max(...array.map(function(a) {
+      return a.length;
+    }));
+    for (var i = 0; i < array.length; i++) {
+      const elm = []
+      for (var j = 0; j < length; j++) {
+        try {
+          elm.push(array[j][i])
+        } catch (e) {
+          elm.push(undefined);
+        }
+      }
+      unzipped.push(elm);
+    }
+    return unzipped;
   }
 };

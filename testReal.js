@@ -117,6 +117,25 @@ console.log(_.uniq(list, 'a'));
 console.log(_.uniq(list, 'b'));
 
 // Test case for _.zip(*arrays)
+
 console.log(_.zip(['moe', 'larry', 'curly'], [30, 40, 50], [true, false, false]));
 console.log(_.zip(['larry', 'curly'], [30, 40, 50], [true, false, false]));
 console.log(_.zip(['moe', 'larry', 'curly'], [30, 40, 50], [true, false]));
+
+// Test case for _.unzip(array)
+console.log("\nTest case for _.unzip(array)");
+console.log(_.unzip([
+  ["moe", 30, true],
+  ["larry", 40, false],
+  ["curly", 50, false]
+]));
+console.log(_.unzip([
+  [30, true],
+  ["larry", 40, false],
+  ["curly", 50, false]
+]));
+console.log(_.unzip([
+  ["moe", 30, true],
+  ["larry", 40, false],
+  ["curly", 50]
+]));
