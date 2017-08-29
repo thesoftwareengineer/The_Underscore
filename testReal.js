@@ -214,3 +214,13 @@ console.log(_.indexOf(undefined));
 console.log(_.indexOf([]));
 console.log(_.indexOf(0));
 console.log(_.indexOf({}));
+
+// Test case of _.lastIndexOf(array, value, [fromIndex])
+console.log("\nTest case of _.lastIndexOf(array, value, [fromIndex])");
+console.log(_.lastIndexOf([1, 2, 3, 1, 2, 3], 1));
+console.log(_.lastIndexOf([1, 2, 3, 1, 2, 3, 2], 1, 1));
+console.log(_.lastIndexOf(false));
+console.log(_.lastIndexOf(undefined));
+console.log(_.lastIndexOf([]));
+console.log(_.lastIndexOf(0));
+console.log(_.lastIndexOf({}));

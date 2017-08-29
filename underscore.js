@@ -342,5 +342,17 @@ const _ = module.exports = {
     } else {
       return array.indexOf(value);
     }
+  },
+
+  // Last occurence of a value in array
+  lastIndexOf: function(array, value, fromIndex) {
+    if (!(array instanceof Array)) {
+      return -1;
+    }
+    if (!fromIndex) fromIndex = array.length - 1;
+    for (var i = fromIndex; i >= 0; i--) {
+      if (array[i] == value) return i;
+    }
+    return -1;
   }
 };
