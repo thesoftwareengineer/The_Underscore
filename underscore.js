@@ -19,8 +19,30 @@ const genCb = function(iteratee) {
   }
 }
 
-// Generic binary search
-const binarySearch = function(array, value) {
+const genPredicate = function(predicate) {
+  if (predicate instanceof Function) {
+    return predicate;
+  } else {
+    return function(obj) {
+      if (Object.keys(obj).length !== 0) {
+        return obj[0] === predicate[0]
+      } else {
+        return obj === predicate;
+      }
+    }
+  }
+}
+
+// Generic binary search with callback and toInsert option
+const binarySearch = function(array, value, cb, toInsert) {
+  if (array.length === 0) {
+    return 0;
+  }
+  if (!cb) {
+    cb = function(n) {
+      return n;
+    }
+  }
   var min = 0;
   var max = array.length - 1;
   var curr;
@@ -28,15 +50,20 @@ const binarySearch = function(array, value) {
   while (min <= max) {
     currIdx = (max + min) / 2 | 0;
     curr = array[currIdx];
-    if (curr < value) {
-      max = currIdx + 1;
-    } else if (curr > value) {
-      min = currIdx - 1
+
+    if (cb(curr) < cb(value)) {
+      min = currIdx + 1;
+    } else if (cb(curr) > cb(value)) {
+      max = currIdx - 1
     } else {
       return currIdx;
     }
   }
-  return -1;
+  if (!toInsert) {
+    return -1;
+  } else {
+    return currIdx;
+  }
 }
 
 const _ = module.exports = {
@@ -354,5 +381,64 @@ const _ = module.exports = {
       if (array[i] == value) return i;
     }
     return -1;
+  },
+
+  // Uses binary search to return index at which value should
+  // be insterted at if order is to be sorted
+  sortedIndex: function(list, value, iteratee) {
+    if (!(list instanceof Array)) {
+      return 0;
+    }
+    if (iteratee != null) iteratee = genCb(iteratee);
+    return binarySearch(list, value, iteratee, true);
+  },
+
+  // Similar to indexOf, but uses predicate as search criteria
+  findIndex: function(array, predicate) {
+    if (!(array instanceof Array)) {
+      return -1;
+    }
+    if (predicate != null) predicate = genPredicate(predicate);
+    for (var i = 0; i < array.length; i++) {
+      if (predicate(array[i])) {
+        return i;
+      }
+    }
+    return -1;
+  },
+
+  // Like findIndex but searches in reverse
+  findLastIndex: function(array, predicate) {
+    if (!(array instanceof Array) || array.length === 0) {
+      return -1;
+    }
+    if (predicate != null) predicate = genPredicate(predicate);
+    for (var i = array.length - 1; i >= 0; i++) {
+      if (predicate(array[i])) {
+        return i;
+      }
+    }
+    return -1;
+  },
+
+  range(start, stop, step) {
+    if (arguments.length === 1) {
+      stop = start;
+      start = 0;
+    }
+    if (!step) {
+      step = 1;
+    }
+    const numbers = [];
+    if (step >= 1) {
+      for (var i = start; i < stop; i += step) {
+        numbers.push(i);
+      }
+    } else {
+      for (var i = start; i > stop; i += step) {
+        numbers.push(i);
+      }
+    }
+    return numbers;
   }
 };

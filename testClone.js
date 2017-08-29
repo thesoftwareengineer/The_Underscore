@@ -206,7 +206,7 @@ console.log(_.object({}));
 // Test case of _.indexOf(array, values, [isSorted])
 console.log("\nTest case of _.indexOf(array, values, [isSorted])");
 console.log(_.indexOf([1, 2, 3], 2));
-console.log(_.indexOf([1, 2, 3], 2, true));
+console.log(_.indexOf([1, 1, 2, 3], 2, true));
 console.log(_.indexOf([1, 2, 2, 5, 3], 2));
 console.log(_.indexOf(false));
 console.log(_.indexOf(undefined));
@@ -214,12 +214,84 @@ console.log(_.indexOf([]));
 console.log(_.indexOf(0));
 console.log(_.indexOf({}));
 
-// Test case of _.lastIndexOf(array, value, [fromIndex])
-console.log("\nTest case of _.lastIndexOf(array, value, [fromIndex])");
-console.log(_.lastIndexOf([1, 2, 3, 1, 2, 3], 1));
-console.log(_.lastIndexOf([1, 2, 3, 1, 2, 3, 2], 1, 1));
-console.log(_.lastIndexOf(false));
-console.log(_.lastIndexOf(undefined));
-console.log(_.lastIndexOf([]));
-console.log(_.lastIndexOf(0));
-console.log(_.lastIndexOf({}));
+// Test case of _.sortedIndex(list, value, [iteratee])
+console.log("\nTest case of _.sortedIndex(list, value, [iteratee])");
+console.log(_.sortedIndex([10, 20, 30, 40, 50], 35));
+var stooges = [{
+  name: 'moe',
+  age: 40
+}, {
+  name: 'curly',
+  age: 60
+}];
+console.log(_.sortedIndex(stooges, {
+  name: 'larry',
+  age: 50
+}, 'age'));
+console.log(_.sortedIndex(false));
+console.log(_.sortedIndex(undefined));
+console.log(_.sortedIndex([]));
+console.log(_.sortedIndex(0));
+console.log(_.sortedIndex({}));
+
+// predicate function for testing
+const isPrime = function(num) {
+  for (let i = 2, s = Math.sqrt(num); i <= s; i++)
+    if (num % i === 0) return false;
+  return num !== 1;
+}
+
+// Test case for _.findIndex(list, predicate)
+console.log("\nTest case for _.findIndex(list, predicate)");
+console.log(_.findIndex([4, 6, 8, 12], isPrime));
+console.log(_.findIndex([4, 6, 7, 12], isPrime));
+console.log(_.findIndex(false));
+console.log(_.findIndex(undefined));
+console.log(_.findIndex([]));
+console.log(_.findIndex(0));
+console.log(_.findIndex({}));
+
+// Test case for .findLastIndex(array, predicate)
+console.log("\nTest case for .findLastIndex(array, predicate)");
+var users = [{
+    'id': 1,
+    'name': 'Bob',
+    'last': 'Brown'
+  },
+  {
+    'id': 2,
+    'name': 'Ted',
+    'last': 'White'
+  },
+  {
+    'id': 3,
+    'name': 'Frank',
+    'last': 'James'
+  },
+  {
+    'id': 4,
+    'name': 'Ted',
+    'last': 'Jones'
+  }
+];
+console.log(_.findLastIndex(users, {
+  name: 'Ted'
+}));
+console.log(_.findLastIndex(false));
+console.log(_.findLastIndex(undefined));
+console.log(_.findLastIndex([]));
+console.log(_.findLastIndex(0));
+console.log(_.findLastIndex({}));
+
+// Test case for _.range([start], stop, [step])
+console.log("\nTest case for _.range([start], stop, [step])");
+console.log(_.range(10));
+console.log(_.range(1, 11));
+console.log(_.range(0, 30, 5));
+console.log(_.range(0, -10, -1));
+console.log(_.range(0));
+console.log(_.range(false));
+console.log(_.range(undefined));
+console.log(_.range([]));
+console.log(_.range(0));
+console.log(_.range({}));
