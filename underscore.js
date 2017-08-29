@@ -9,6 +9,10 @@
 const genCb = function(iteratee) {
   if (iteratee instanceof Function) {
     return iteratee;
+  } else if (iteratee === "length") {
+    return function(obj) {
+      return obj.length;
+    }
   } else {
     return function(obj) {
       if (Object.keys(obj).length !== 0) {
@@ -130,7 +134,8 @@ const _ = module.exports = {
     return min;
   },
 
-  //Returns a sorted copy of list in ascending order iteratee criteria.
+  // Returns a sorted copy of list in ascending order
+  // iteratee criteria.
   sortBy: function(list, iteratee) {
     if (!list) return [];
     if (iteratee != null) iteratee = genCb(iteratee);
@@ -144,6 +149,29 @@ const _ = module.exports = {
       sorted[i] = list[sorted[i]];
     }
     return sorted;
+  },
+
+  //Groups sets by result from iteratee
+  groupBy: function(list, iteratee) {
+    if (!list || list.length === 0 || !(list instanceof Array)) return [];
+    if (iteratee != null) iteratee = genCb(iteratee);
+    const groups = {};
+    var key = iteratee ? iteratee(list[0]) : list[0];
+    groups[key] = [list[0]];
+    for (var i = 1; i < list.length; i++) {
+      const newKey = iteratee ? iteratee(list[i]) : list[i];
+      if (key === newKey) {
+        groups[key].push(list[i]);
+      } else {
+        key = newKey;
+        if (groups[key] === undefined) {
+          groups[newKey] = [list[i]];
+        } else {
+          groups[newKey].push(list[i]);
+        }
+      }
+    }
+    return groups;
   },
 
   /**Arrays**/

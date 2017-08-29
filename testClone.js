@@ -146,6 +146,18 @@ console.log(_.sortBy([]));
 console.log(_.sortBy(0));
 console.log(_.sortBy({}));
 
+// Test case for _.groupBy(list, iteratee)
+console.log("\nTest case for _.groupBy(list, iteratee)");
+console.log(_.groupBy([1.3, 2.1, 2.4], function(num) {
+  return Math.floor(num);
+}));
+console.log(_.groupBy(['one', 'two', 'three'], 'length'));
+console.log(_.groupBy(false));
+console.log(_.groupBy(undefined));
+console.log(_.groupBy([]));
+console.log(_.groupBy(0));
+console.log(_.groupBy({}))
+
 
 //**Arrays test cases**//
 
