@@ -73,7 +73,7 @@ const _ = module.exports = {
         if (n === 1) {
           return array.pop();
         }
-        return array.slice(n - 1, array.length);
+        return array.slice(n, array.length);
       }
       return void 0;
     }
@@ -167,6 +167,9 @@ const _ = module.exports = {
   // that contains all the values that are the
   // same in all arrays.
   intersection: function(arrays) {
+    if (!(arrays instanceof Array)) {
+      return [];
+    }
     var arr = arguments[0];
     for (var i = 1; i < arguments.length; i++) {
       const arg = arguments[i];
@@ -206,6 +209,9 @@ const _ = module.exports = {
   // iteratee that can be passed as the criteria
   // for what duplicates mean.
   uniq: function(array, isSorted, iteratee) {
+    if (!(array instanceof Array)) {
+      return [];
+    }
     if (typeof(isSorted) !== "boolean") {
       iteratee = isSorted;
       isSorted = false;
@@ -239,6 +245,9 @@ const _ = module.exports = {
   // postions i.e. [[first elments], [second elements],
   // ... [last elements]]
   zip: function(arrays) {
+    if (!(arrays instanceof Array)) {
+      return [];
+    }
     const zipped = [];
     const args = [].slice.call(arguments);
     const length = Math.max(...args.map(function(a) {
@@ -262,6 +271,9 @@ const _ = module.exports = {
   // first which has first element of all
   // other arrays and so on...
   unzip: function(array) {
+    if (!(array instanceof Array)) {
+      return [];
+    }
     const unzipped = [];
     const length = Math.max(...array.map(function(a) {
       return a.length;
@@ -278,5 +290,24 @@ const _ = module.exports = {
       unzipped.push(elm);
     }
     return unzipped;
+  },
+
+  // Converts array into an object of key value
+  // pairs. Takes single list of lists with
+  // [key, values], or two list one containing
+  // either keys or values.
+  object: function(list, values) {
+    if (!(list instanceof Array)) {
+      return {};
+    }
+    const obj = {};
+    for (var i = 0; i < list.length; i++) {
+      if (values) {
+        obj[list[i]] = values[i];
+      } else {
+        obj[list[i][0]] = list[i][1];
+      }
+    }
+    return obj;
   }
 };
