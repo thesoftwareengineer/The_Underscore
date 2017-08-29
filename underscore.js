@@ -71,7 +71,80 @@ const _ = module.exports = {
 
   /**Collections**/
 
+  // "Plucks" all values that match key in each
+  // element and returns them as an array.
+  pluck: function(list, propertyName) {
+    if (!list) {
+      return [];
+    }
+    const plucked = [];
+    for (var i = 0; i < list.length; i++) {
+      plucked.push(list[i][propertyName]);
+    }
+    return plucked;
+  },
 
+  // Returns max on a list and uses iteratee if given.
+  // If empty return -Infinity if value is non-numeric,
+  // it will ignore.
+  max: function(list, iteratee) {
+    if (!list || !(list instanceof Array) || list.length === 0) {
+      return -Infinity;
+    }
+    if (iteratee != null) iteratee = genCb(iteratee);
+    var max = list[0];
+    for (var i = 0; i < list.length; i++) {
+      const value = list[i];
+      const compute = iteratee ? iteratee(value) : value;
+      if (isNaN(compute)) {
+        return -Infinity;
+      }
+      const currMax = iteratee ? iteratee(max) : max;
+      if (currMax < compute) {
+        max = value;
+      }
+    }
+    return max;
+  },
+
+  // Returns min on a list and uses iteratee if given.
+  // If empty return Infinity if value is non-numeric,
+  // it will ignore.
+  min: function(list, iteratee) {
+    if (!list || !(list instanceof Array) || list.length === 0) {
+      return Infinity;
+    }
+    if (iteratee != null) iteratee = genCb(iteratee);
+    var min = list[0];
+    for (var i = 0; i < list.length; i++) {
+      const value = list[i];
+      const compute = iteratee ? iteratee(value) : value;
+      if (isNaN(compute)) {
+        return Infinity;
+      }
+      const currmin = iteratee ? iteratee(min) : min;
+      if (currmin > compute) {
+        min = value;
+      }
+    }
+    return min;
+  },
+
+  //Returns a sorted copy of list in ascending order iteratee criteria.
+  sortBy: function(list, iteratee) {
+    if (!list) return [];
+    if (iteratee != null) iteratee = genCb(iteratee);
+    const indices = this.range(list.length);
+    var sorted = indices.sort(function(a, b) {
+      const aVal = iteratee ? iteratee(list[a]) : list[a];
+      const bVal = iteratee ? iteratee(list[b]) : list[b];
+      return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+    })
+    for (var i = 0; i < list.length; i++) {
+      sorted[i] = list[sorted[i]];
+    }
+    return sorted;
+  },
 
   /**Arrays**/
 

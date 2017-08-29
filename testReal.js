@@ -1,6 +1,155 @@
 _ = require("./underscoreMin");
 
-// Test case for first(array, [n]);
+//**Collections test cases**//
+
+// Test case for _.pluck(list, propertyName)
+console.log("\nTest case for _.pluck(list, propertyName)");
+console.log(_.pluck([{
+  name: 'moe',
+  age: 40
+}, {
+  name: 'larry',
+  age: 50
+}, {
+  name: 'curly',
+  age: 60
+}], 'name'));
+console.log(_.pluck([{
+  name: 'moe',
+  age: 40
+}, {
+  name: 'larry',
+  age: 50
+}, {
+  name: 'curly',
+  age: 60
+}], 'age'));
+console.log(_.pluck([{
+  name: 'moe',
+  age: 40
+}, {
+  age: 50
+}, {
+  name: 'curly',
+  age: 60
+}], 'name'));
+console.log(_.pluck(false));
+console.log(_.pluck(undefined));
+console.log(_.pluck([]));
+console.log(_.pluck(0));
+console.log(_.pluck({}));
+
+// Test case for _.max(list, iteratee)
+console.log("\nTest case for _.max(list, iteratee)");
+console.log(_.max([{
+  name: 'moe',
+  age: 40
+}, {
+  name: 'larry',
+  age: 50
+}, {
+  name: 'curly',
+  age: 60
+}], function(stooge) {
+  return stooge.age;
+}));
+console.log(_.max([{
+  name: 'moe',
+  age: 40
+}, {
+  name: 'larry',
+  age: 50
+}, {
+  name: 'curly',
+  age: 60
+}], function(stooge) {
+  return stooge.age;
+}));
+console.log(_.max([{
+  name: 'moe',
+  age: 40
+}, {
+  age: 50
+}, {
+  name: 'curly',
+  age: 60
+}], function(stooge) {
+  return stooge.name;
+}));
+console.log(_.max(false));
+console.log(_.max(undefined));
+console.log(_.max([]));
+console.log(_.max(0));
+console.log(_.max({}));
+
+
+// Test case for _.min(list, iteratee)
+console.log("\nTest case for _.min(list, iteratee)");
+console.log(_.min([{
+  name: 'moe',
+  age: 40
+}, {
+  name: 'larry',
+  age: 50
+}, {
+  name: 'curly',
+  age: 60
+}], function(stooge) {
+  return stooge.age;
+}));
+console.log(_.min([{
+  name: 'moe',
+  age: 40
+}, {
+  name: 'larry',
+  age: 50
+}, {
+  name: 'curly',
+  age: 60
+}], function(stooge) {
+  return stooge.age;
+}));
+console.log(_.min([{
+  name: 'moe',
+  age: 40
+}, {
+  age: 50
+}, {
+  name: 'curly',
+  age: 60
+}], function(stooge) {
+  return stooge.name;
+}));
+console.log(_.min(false));
+console.log(_.min(undefined));
+console.log(_.min([]));
+console.log(_.min(0));
+console.log(_.min({}));
+
+// Test case for _.sortBy(list, iteratee)
+console.log("\nTest case for _.sortBy(list, iteratee)");
+console.log(_.sortBy([1, 2, 3, 4, 5, 6], function(num) {
+  return Math.sin(num);
+}));
+console.log(_.sortBy([{
+  name: 'moe',
+  age: 40
+}, {
+  name: 'larry',
+  age: 50
+}, {
+  name: 'curly',
+  age: 60
+}], 'name'));
+console.log(_.sortBy(false));
+console.log(_.sortBy(undefined));
+console.log(_.sortBy([]));
+console.log(_.sortBy(0));
+console.log(_.sortBy({}));
+
+//**Arrays test cases**//
+
+// Test case for _.first(array, [n]);
 console.log("\nTest case for first(array, [n])");
 console.log(_.first([10, 1, 3, 5]));
 console.log(_.first([10, 1, 3, 5], 2));
@@ -11,7 +160,7 @@ console.log(_.first([]));
 console.log(_.first(0));
 console.log(_.first({}));
 
-// Test case for initial(array, [n]);
+// Test case for _.initial(array, [n]);
 console.log("\nTest case for intial(array, [n])");
 console.log(_.initial([10, 1, 3, 5]));
 console.log(_.initial([10, 1, 3, 5], 2));
