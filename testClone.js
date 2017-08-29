@@ -117,3 +117,9 @@ var list = [{
 }];
 console.log(_.uniq(list, 'a'));
 console.log(_.uniq(list, 'b'));
+
+// Test case for _.zip(*arrays)
+console.log("\nTest case for _.zip(*arrays)");
+console.log(_.zip(['moe', 'larry', 'curly'], [30, 40, 50], [true, false, false]));
+console.log(_.zip(['larry', 'curly'], [30, 40, 50], [true, false, false]));
+console.log(_.zip(['moe', 'larry', 'curly'], [30, 40, 50], [true, false]));

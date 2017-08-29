@@ -233,5 +233,28 @@ const _ = module.exports = {
       }
     }
     return unique;
+  },
+
+  // Joins arrays together with their corresponding
+  // postions i.e. [[first elments], [second elements],
+  // ... [last elements]]
+  zip: function(arrays) {
+    const zipped = [];
+    const args = [].slice.call(arguments);
+    const length = Math.max(...args.map(function(a) {
+      return a.length;
+    }));
+    for (var i = 0; i < length; i++) {
+      const elm = []
+      for (var j = 0; j < args.length; j++) {
+        try {
+          elm.push(args[j][i])
+        } catch (e) {
+          elm.push(undefined);
+        }
+      }
+      zipped.push(elm);
+    }
+    return zipped;
   }
 };
