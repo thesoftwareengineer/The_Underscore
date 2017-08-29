@@ -87,3 +87,33 @@ console.log("\nText case for difference(*arrays)");
 console.log(_.difference([1, 2, 3], [101, 2, 1, 10], [2, 1]));
 console.log(_.difference(undefined, [101, 2, 1, 10], [2, 1]));
 console.log(_.difference([1, 2, 3], false, [2, 1]));
+
+//Test case for _.uniq(array, [isSorted], [iteratee])
+console.log("\nTest case for _.uniq(array, [isSorted], [iteratee])");
+console.log(_.uniq([1, 2, 1, 4, 1, 3]));
+console.log(_.uniq([1, 2, 1, 4, 1, 3], true, false));
+console.log(_.uniq([2, 2, 1, 4, 1, 3], true, false));
+console.log(_.uniq([1, 2, 1, 4, 1, 3], false, true));
+console.log(_.uniq([2, 2, 1, 4, 1, 3], true, true));
+console.log(_.union([1, 1, 1, 2, 2, 2, 3, 3, 3, 10, 10, 10], true));
+var list = [{
+  a: 1
+}, {
+  a: 1,
+  b: 5
+}, {
+  a: 1,
+  c: 5
+}, {
+  a: 2
+}, {
+  a: 3
+}, {
+  a: 4
+}, {
+  a: 3
+}, {
+  a: 2
+}];
+console.log(_.uniq(list, 'a'));
+console.log(_.uniq(list, 'b'));
