@@ -16,7 +16,7 @@ const genCb = function(iteratee) {
   } else {
     return function(obj) {
       if (Object.keys(obj).length !== 0) {
-        return obj[iteratee]
+        return obj[iteratee];
       } else {
         return iteratee;
       }
