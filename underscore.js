@@ -19,6 +19,26 @@ const genCb = function(iteratee) {
   }
 }
 
+// Generic binary search
+const binarySearch = function(array, value) {
+  var min = 0;
+  var max = array.length - 1;
+  var curr;
+  var currIdx;
+  while (min <= max) {
+    currIdx = (max + min) / 2 | 0;
+    curr = array[currIdx];
+    if (curr < value) {
+      max = currIdx + 1;
+    } else if (curr > value) {
+      min = currIdx - 1
+    } else {
+      return currIdx;
+    }
+  }
+  return -1;
+}
+
 const _ = module.exports = {
 
   // Return first n elements in array by default n = 1
@@ -309,5 +329,18 @@ const _ = module.exports = {
       }
     }
     return obj;
+  },
+
+  // Returns indexOf the value and returns -1
+  // if values does not exist.
+  indexOf: function(array, value, isSorted) {
+    if (!(array instanceof Array)) {
+      return -1;
+    }
+    if (isSorted) {
+      return binarySearch(array, value);
+    } else {
+      return array.indexOf(value);
+    }
   }
 };

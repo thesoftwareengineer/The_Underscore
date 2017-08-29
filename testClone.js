@@ -202,3 +202,14 @@ console.log(_.object(undefined));
 console.log(_.object([]));
 console.log(_.object(0));
 console.log(_.object({}));
+
+// Test case of _.indexOf(array, values, [isSorted])
+console.log("\nTest case of _.indexOf(array, values, [isSorted])");
+console.log(_.indexOf([1, 2, 3], 2));
+console.log(_.indexOf([1, 2, 3], 2, true));
+console.log(_.indexOf([1, 2, 2, 5, 3], 2));
+console.log(_.indexOf(false));
+console.log(_.indexOf(undefined));
+console.log(_.indexOf([]));
+console.log(_.indexOf(0));
+console.log(_.indexOf({}));
