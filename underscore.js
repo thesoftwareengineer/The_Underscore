@@ -2,6 +2,7 @@
 // Authors: Eli D. Gonzalez & Patricio Torres
 // license: MIT
 
+
 // Helper function that generates a callback for
 // elements in a collection. Should not be used
 // outside of here.
@@ -67,6 +68,12 @@ const binarySearch = function(array, value, cb, toInsert) {
 }
 
 const _ = module.exports = {
+
+  /**Collections**/
+
+
+
+  /**Arrays**/
 
   // Return first n elements in array by default n = 1
   // Also check for non array types and returns undefined for those
@@ -273,7 +280,7 @@ const _ = module.exports = {
         if (!i || seen !== compute) {
           unique.push(value);
         }
-        seen = compute
+        seen = compute;
       } else if (iteratee !== null) {
         if (seen.indexOf(compute) === -1) {
           unique.push(value);
@@ -421,6 +428,8 @@ const _ = module.exports = {
     return -1;
   },
 
+  // Creates array containing number from [start, end)
+  // Incrementing by step.
   range(start, stop, step) {
     if (arguments.length === 1) {
       stop = start;
@@ -441,4 +450,13 @@ const _ = module.exports = {
     }
     return numbers;
   }
+
+  /**Functions**/
+
+  /**Objects**/
+
+  /**Utility**/
+
+  /**Chaining**/
+
 };
