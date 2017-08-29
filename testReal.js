@@ -159,6 +159,24 @@ console.log(_.groupBy([]));
 console.log(_.groupBy(0));
 console.log(_.groupBy({}))
 
+// Test case for _.indexBy(list, iteratee)
+console.log("\nTest case for _.indexBy(list, iteratee)");
+console.log(_.indexBy([{
+  name: 'moe',
+  age: 40
+}, {
+  name: 'larry',
+  age: 50
+}, {
+  name: 'curly',
+  age: 60
+}], 'age'));
+console.log(_.indexBy(false));
+console.log(_.indexBy(undefined));
+console.log(_.indexBy([]));
+console.log(_.indexBy(0));
+console.log(_.indexBy({}))
+
 //**Arrays test cases**//
 
 // Test case for _.first(array, [n]);

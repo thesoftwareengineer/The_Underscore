@@ -153,12 +153,12 @@ const _ = module.exports = {
 
   //Groups sets by result from iteratee
   groupBy: function(list, iteratee) {
-    if (!list || list.length === 0 || !(list instanceof Array)) return [];
+    if (!list || Object.keys(list).length === 0) return {};
     if (iteratee != null) iteratee = genCb(iteratee);
     const groups = {};
     var key = iteratee ? iteratee(list[0]) : list[0];
     groups[key] = [list[0]];
-    for (var i = 1; i < list.length; i++) {
+    for (var i = 1; i < Object.keys(list).length; i++) {
       const newKey = iteratee ? iteratee(list[i]) : list[i];
       if (key === newKey) {
         groups[key].push(list[i]);
@@ -172,6 +172,19 @@ const _ = module.exports = {
       }
     }
     return groups;
+  },
+
+  indexBy(list, iteratee) {
+    if (!list || Object.keys(list).length === 0) return {};
+    if (iteratee != null) iteratee = genCb(iteratee);
+    const indexed = {};
+    var key = iteratee ? iteratee(list[0]) : list[0];
+    indexed[key] = list[0];
+    for (var i = 1; i < Object.keys(list).length; i++) {
+      key = iteratee ? iteratee(list[i]) : list[0];
+      indexed[key] = list[i];
+    }
+    return indexed;
   },
 
   /**Arrays**/
