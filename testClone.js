@@ -578,11 +578,11 @@ console.log(_.range({}));
 // Test case _.bind(function, object, *agruments)
 console.log("\nTest case for _.bind(function, object, *arguments");
 const func = function(greeting) {
-  return greeting + ": " + this.name
+  return greeting + ": " + this.name;
 };
 const func1 = _.bind(func, {
   name: 'moe'
-}, 'hi')
+}, 'hi');
 console.log(func1());
 const func2 = _.bind(func, {
   name: 'moe'

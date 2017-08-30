@@ -647,18 +647,21 @@ const _ = module.exports = {
 
   // Binds function to an object and can pass arguments
   // to pre-fill some or all arguments.
-  bind: function(func, object, arg1) {
+  bind: function(func, object, ...arg) {
     if (!(func instanceof Function)) throw new TypeError("Bind must be called on a function", "underscore.js", 650);
     object["getFunc"] = func;
     func = object.getFunc;
-    if (arg1) {
-      var args = Array.apply(null, arguments);
-      return func.bind(object, args.slice(2, args.length));
+    if (arg.length !== 0) {
+      var args = Array.apply(null, arg);
+      return object.getFunc.bind.apply(object.getFunc, [null].concat(args));
       //return func.apply(this, arg1.slice(2, arg1.length));
     } else {
       return func.bind(object);
     }
-  }
+  },
+
+  // Binds several methods to an object run in conext invoked.
+  //bindAll: func(object, method)
 
   /**Objects**/
 
