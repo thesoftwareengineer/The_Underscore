@@ -624,3 +624,35 @@ buttonView.onHover();
 // console.log(func3());
 // func3 = _.bindAll(0);
 // console.log(func3());
+
+// Test case for _.partial(function, *arguments)
+console.log("\nTest case for _.partial(function, arguments)");
+const subtract = function(a, b) {
+  return b - a;
+};
+sub5 = _.partial(subtract, 5)
+console.log(sub5(20));
+subFrom20 = _.partial(subtract, _, 20)
+console.log(subFrom20(5));
+sub = _.partial(subtract, 20, 5);
+console.log(sub());
+const volume = function(a, b, c) {
+  //console.log(a, b, c);
+  return a * b * c;
+}
+const vol1 = _.partial(volume, 5);
+console.log(vol1(5, 5));
+const vol2 = _.partial(volume, _, _, 5);
+console.log(vol2(2, 5));
+const vol3 = _.partial(volume, 5, _, 5);
+console.log(vol3(2));
+/**Note: Falsy values throw type error will leave uncomment
+   to test.**/
+// var func3 = _.partial(false);
+// console.log(func3());
+// var func3 = _.partial(undefined);
+// console.log(func3());
+// var func3 = _.partial([]);
+// console.log(func3());
+// func3 = _.partial(0);
+// console.log(func3());

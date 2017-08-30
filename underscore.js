@@ -652,7 +652,7 @@ const _ = module.exports = {
     object["getFunc"] = func;
     func = object.getFunc;
     if (arg.length !== 0) {
-      var args = Array.apply(null, arg);
+      const args = Array.apply(null, arg);
       return func.bind.apply(func, [object].concat(args));
       //return func.apply(this, arg1.slice(2, arg1.length));
     } else {
@@ -667,8 +667,31 @@ const _ = module.exports = {
       object[methods[i]] = object[methods[i]].bind(object);
     }
     return object;
-  }
+  },
 
+  // Partially fill in arguments in a function
+  partial: function(func, ...arg) {
+    var args = Array.prototype.slice.call(arg);
+    while (args.indexOf(_) !== -1) args.splice(args.indexOf(_), 1, null);
+    const length = func.length;
+    //console.log(func.length, args.length);
+    if (args.length < length) {
+      for (var i = 0; i <= length - args.length; i++) {
+        args.push(null);
+      }
+    }
+    return function() {
+      var inArgs = Array.prototype.slice.call(arguments);
+      for (var i = 0; i < length; i++) {
+        if (i >= length || args[i] === null) {
+          args[i] = inArgs.shift();
+        }
+      }
+      args = Array.apply(null, args);
+      //console.log(args);
+      return func.apply(func, args);
+    }
+  }
   /**Objects**/
 
   /**Utility**/
