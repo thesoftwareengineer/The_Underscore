@@ -661,7 +661,13 @@ const _ = module.exports = {
   },
 
   // Binds several methods to an object run in conext invoked.
-  //bindAll: func(object, method)
+  bindAll: function(object, ...methods) {
+    if (!object || methods.length === 0) throw new Error("bindAll must be passed function names");
+    for (var i = 0; i < methods.length; i++) {
+      object[methods[i]] = object[methods[i]].bind(object);
+    }
+    return object;
+  }
 
   /**Objects**/
 

@@ -589,13 +589,38 @@ const func2 = _.bind(func, {
 });
 console.log(func2("元気です"));
 console.log(func2());
-/**Note: "Falsy" values throw type error will leave uncomment
+/**Note: Falsy values throw type error will leave uncomment
    to test.**/
-// var func3 = _.bind(false);
+// var func3 = _.bindAll(false);
 // console.log(func3());
-// func3 = _.bind(undefined);
+// var func3 = _.bindAll(undefined);
 // console.log(func3());
-// func3 = _.bind([]);
+// var func3 = _.bindAll([]);
 // console.log(func3());
-// func3 = _.bind(0);
+// func3 = _.bindAll(0);
+// console.log(func3());
+
+// Test case for _.bindAll(object, *methodNames)
+console.log("\nTest case for _.bindAll");
+var buttonView = {
+  label: 'underscore',
+  onClick: function() {
+    console.log('clicked: ' + this.label);
+  },
+  onHover: function() {
+    console.log('hovering: ' + this.label);
+  }
+};
+_.bindAll(buttonView, 'onClick', 'onHover');
+buttonView.onClick();
+buttonView.onHover();
+/**Note: Falsy values throw type error will leave uncomment
+   to test.**/
+// var func3 = _.bindAll(false);
+// console.log(func3());
+// var func3 = _.bindAll(undefined);
+// console.log(func3());
+// var func3 = _.bindAll([]);
+// console.log(func3());
+// func3 = _.bindAll(0);
 // console.log(func3());
