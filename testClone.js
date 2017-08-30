@@ -225,6 +225,43 @@ console.log(_.toArray([]));
 console.log(_.toArray(0));
 console.log(_.toArray({}));
 
+// Test case for _.size(list)
+console.log("\nTest case for _.size(list)");
+console.log(_.size({
+  one: 1,
+  two: 2,
+  three: 3
+}));
+console.log(_.size([1, 2, 3, 4]));
+console.log(_.size(false));
+console.log(_.size(undefined));
+console.log(_.size([]));
+console.log(_.size(0));
+console.log(_.size({}));
+
+//Test case for _.partition(array, predicate)
+console.log("\nTest case for _.partition(array, predicate)");
+console.log(_.partition([0, 1, 2, 3, 4, 5], function(n) {
+  return n % 2 !== 0;
+}));
+console.log(_.partition([{
+  a: 1,
+  b: 1
+}, {
+  c: 1
+}, {
+  a: 1
+}, {
+  a: 2
+}], {
+  a: 1
+}));
+console.log(_.partition(false));
+console.log(_.partition(undefined));
+console.log(_.partition([]));
+console.log(_.partition(0));
+console.log(_.partition({}));
+
 
 //**Arrays test cases**//
 
@@ -441,6 +478,17 @@ console.log(_.indexOf(undefined));
 console.log(_.indexOf([]));
 console.log(_.indexOf(0));
 console.log(_.indexOf({}));
+
+// Test case of _.lastIndexOf(array, value, [fromIndex])
+console.log("\nTest case of _.lastIndexOf(array, value, [fromIndex])");
+console.log(_.lastIndexOf([1, 2, 3, 1, 2, 3], 1));
+console.log(_.lastIndexOf([1, 2, 3, 1, 2, 3, 2], 1, 1));
+console.log(_.lastIndexOf(false));
+console.log(_.lastIndexOf(undefined));
+console.log(_.lastIndexOf([]));
+console.log(_.lastIndexOf(0));
+console.log(_.lastIndexOf({}));
+
 
 // Test case of _.sortedIndex(list, value, [iteratee])
 console.log("\nTest case of _.sortedIndex(list, value, [iteratee])");

@@ -32,7 +32,8 @@ const genPredicate = function(predicate) {
   } else {
     return function(obj) {
       if (Object.keys(obj).length !== 0) {
-        return obj[0] === predicate[0]
+        const idx = Object.keys(predicate)[0];
+        return obj[idx] === predicate[idx];
       } else {
         return obj === predicate;
       }
@@ -238,6 +239,30 @@ const _ = module.exports = {
       lst.push(list[keys[i]]);
     }
     return lst;
+  },
+
+  // Returns size of a list
+  size: function(list) {
+    if (!list || Object.keys(list).length === 0) return 0;
+    return Object.keys(list).length;
+  },
+
+  partition: function(array, predicate) {
+    if (!array || Object.keys(array).length === 0) return [
+      [],
+      []
+    ];
+    if (predicate != null) predicate = genPredicate(predicate);
+    const arr1 = [];
+    const arr2 = [];
+    for (var i = 0; i < array.length; i++) {
+      if (predicate(array[i])) {
+        arr1.push(array[i]);
+      } else {
+        arr2.push(array[i]);
+      }
+    }
+    return [arr1, arr2];
   },
 
   /**Arrays**/

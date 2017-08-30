@@ -226,6 +226,43 @@ console.log(_.toArray([]));
 console.log(_.toArray(0));
 console.log(_.toArray({}));
 
+// Test case for _.size(list)
+console.log("\nTest case for _.size(list)");
+console.log(_.size({
+  one: 1,
+  two: 2,
+  three: 3
+}));
+console.log(_.size([1, 2, 3, 4]));
+console.log(_.size(false));
+console.log(_.size(undefined));
+console.log(_.size([]));
+console.log(_.size(0));
+console.log(_.size({}));
+
+//Test case for _.partition(array, predicate)
+console.log("\nTest case for _.partition(array, predicate)");
+console.log(_.partition([0, 1, 2, 3, 4, 5], function(n) {
+  return n % 2 !== 0;
+}));
+console.log(_.partition([{
+  a: 1,
+  b: 1
+}, {
+  c: 1
+}, {
+  a: 1
+}, {
+  a: 2
+}], {
+  a: 1
+}));
+console.log(_.partition(false));
+console.log(_.partition(undefined));
+console.log(_.partition([]));
+console.log(_.partition(0));
+console.log(_.partition({}));
+
 //**Arrays test cases**//
 
 // Test case for _.first(array, [n]);
