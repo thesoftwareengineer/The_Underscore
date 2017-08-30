@@ -5,34 +5,34 @@ _ = require("./underscoreMin");
 // Test case for _.pluck(list, propertyName)
 console.log("\nTest case for _.pluck(list, propertyName)");
 console.log(_.pluck([{
-  name: 'moe',
+  name: "moe",
   age: 40
 }, {
-  name: 'larry',
+  name: "larry",
   age: 50
 }, {
-  name: 'curly',
+  name: "curly",
   age: 60
-}], 'name'));
+}], "name"));
 console.log(_.pluck([{
-  name: 'moe',
+  name: "moe",
   age: 40
 }, {
-  name: 'larry',
+  name: "larry",
   age: 50
 }, {
-  name: 'curly',
+  name: "curly",
   age: 60
-}], 'age'));
+}], "age"));
 console.log(_.pluck([{
-  name: 'moe',
+  name: "moe",
   age: 40
 }, {
   age: 50
 }, {
-  name: 'curly',
+  name: "curly",
   age: 60
-}], 'name'));
+}], "name"));
 console.log(_.pluck(false));
 console.log(_.pluck(undefined));
 console.log(_.pluck([]));
@@ -42,36 +42,36 @@ console.log(_.pluck({}));
 // Test case for _.max(list, iteratee)
 console.log("\nTest case for _.max(list, iteratee)");
 console.log(_.max([{
-  name: 'moe',
+  name: "moe",
   age: 40
 }, {
-  name: 'larry',
+  name: "larry",
   age: 50
 }, {
-  name: 'curly',
+  name: "curly",
   age: 60
 }], function(stooge) {
   return stooge.age;
 }));
 console.log(_.max([{
-  name: 'moe',
+  name: "moe",
   age: 40
 }, {
-  name: 'larry',
+  name: "larry",
   age: 50
 }, {
-  name: 'curly',
+  name: "curly",
   age: 60
 }], function(stooge) {
   return stooge.age;
 }));
 console.log(_.max([{
-  name: 'moe',
+  name: "moe",
   age: 40
 }, {
   age: 50
 }, {
-  name: 'curly',
+  name: "curly",
   age: 60
 }], function(stooge) {
   return stooge.name;
@@ -86,36 +86,36 @@ console.log(_.max({}));
 // Test case for _.min(list, iteratee)
 console.log("\nTest case for _.min(list, iteratee)");
 console.log(_.min([{
-  name: 'moe',
+  name: "moe",
   age: 40
 }, {
-  name: 'larry',
+  name: "larry",
   age: 50
 }, {
-  name: 'curly',
+  name: "curly",
   age: 60
 }], function(stooge) {
   return stooge.age;
 }));
 console.log(_.min([{
-  name: 'moe',
+  name: "moe",
   age: 40
 }, {
-  name: 'larry',
+  name: "larry",
   age: 50
 }, {
-  name: 'curly',
+  name: "curly",
   age: 60
 }], function(stooge) {
   return stooge.age;
 }));
 console.log(_.min([{
-  name: 'moe',
+  name: "moe",
   age: 40
 }, {
   age: 50
 }, {
-  name: 'curly',
+  name: "curly",
   age: 60
 }], function(stooge) {
   return stooge.name;
@@ -132,15 +132,15 @@ console.log(_.sortBy([1, 2, 3, 4, 5, 6], function(num) {
   return Math.sin(num);
 }));
 console.log(_.sortBy([{
-  name: 'moe',
+  name: "moe",
   age: 40
 }, {
-  name: 'larry',
+  name: "larry",
   age: 50
 }, {
-  name: 'curly',
+  name: "curly",
   age: 60
-}], 'name'));
+}], "name"));
 console.log(_.sortBy(false));
 console.log(_.sortBy(undefined));
 console.log(_.sortBy([]));
@@ -152,7 +152,7 @@ console.log("\nTest case for _.groupBy(list, iteratee)");
 console.log(_.groupBy([1.3, 2.1, 2.4], function(num) {
   return Math.floor(num);
 }));
-console.log(_.groupBy(['one', 'two', 'three'], 'length'));
+console.log(_.groupBy(["one", "two", "three"], "length"));
 console.log(_.groupBy(false));
 console.log(_.groupBy(undefined));
 console.log(_.groupBy([]));
@@ -162,15 +162,15 @@ console.log(_.groupBy({}));
 // Test case for _.indexBy(list, iteratee)
 console.log("\nTest case for _.indexBy(list, iteratee)");
 console.log(_.indexBy([{
-  name: 'moe',
+  name: "moe",
   age: 40
 }, {
-  name: 'larry',
+  name: "larry",
   age: 50
 }, {
-  name: 'curly',
+  name: "curly",
   age: 60
-}], 'age'));
+}], "age"));
 console.log(_.indexBy(false));
 console.log(_.indexBy(undefined));
 console.log(_.indexBy([]));
@@ -180,7 +180,7 @@ console.log(_.indexBy({}));
 // Test case for _.countBy(list, iteratee)
 console.log("\nTest case for _.countBy(list, iteratee)");
 console.log(_.countBy([1, 2, 3, 4, 5], function(num) {
-  return num % 2 == 0 ? 'even' : 'odd';
+  return num % 2 == 0 ? "even" : "odd";
 }));
 console.log(_.countBy(false));
 console.log(_.countBy(undefined));
@@ -215,10 +215,10 @@ console.log((function() {
 console.log(_.toArray(1, 2, 3, 4));
 console.log(_.toArray([1, 2, 3, 4]));
 console.log(_.toArray({
-  1: 'a',
-  2: 'b',
-  3: 'c',
-  4: 'd'
+  1: "a",
+  2: "b",
+  3: "c",
+  4: "d"
 }));
 console.log(_.toArray(false));
 console.log(_.toArray(undefined));
@@ -311,7 +311,7 @@ console.log(_.rest({}));
 
 // Test case for _.compact(array);
 console.log("\nTest case for _.compact(array)");
-console.log(_.compact([10, 1, 3, 5, NaN, '0', false]));
+console.log(_.compact([10, 1, 3, 5, NaN, "0", false]));
 console.log(_.compact([10, 1, 0, 3, 5]));
 console.log(_.compact([undefined, 10, 1, 3, 5]));
 console.log(_.compact(false));
@@ -403,8 +403,8 @@ var list = [{
 }, {
   a: 2
 }];
-console.log(_.uniq(list, 'a'));
-console.log(_.uniq(list, 'b'));
+console.log(_.uniq(list, "a"));
+console.log(_.uniq(list, "b"));
 console.log(_.uniq(false));
 console.log(_.uniq(undefined));
 console.log(_.uniq([]));
@@ -413,9 +413,9 @@ console.log(_.uniq({}));
 
 // Test case for _.zip(*arrays)
 console.log("\nTest case for _.zip(*arrays)");
-console.log(_.zip(['moe', 'larry', 'curly'], [30, 40, 50], [true, false, false]));
-console.log(_.zip(['larry', 'curly'], [30, 40, 50], [true, false, false]));
-console.log(_.zip(['moe', 'larry', 'curly'], [30, 40, 50], [true, false]));
+console.log(_.zip(["moe", "larry", "curly"], [30, 40, 50], [true, false, false]));
+console.log(_.zip(["larry", "curly"], [30, 40, 50], [true, false, false]));
+console.log(_.zip(["moe", "larry", "curly"], [30, 40, 50], [true, false]));
 console.log(_.zip(false));
 console.log(_.zip(undefined));
 console.log(_.zip([]));
@@ -448,19 +448,19 @@ console.log(_.unzip({}));
 // Test case of _.object(list, [values])
 console.log("\nTest case for _.object(list, [values])");
 console.log(_.object(false));
-console.log(_.object(['moe', 'larry', 'curly'], [30, 40, 50]));
+console.log(_.object(["moe", "larry", "curly"], [30, 40, 50]));
 console.log(
   _.object([
-    ['moe', 30],
-    ['larry', 40],
-    ['curly', 50]
+    ["moe", 30],
+    ["larry", 40],
+    ["curly", 50]
   ]));
-console.log(_.object(['larry', 'curly'], [30, 40, 50]));
+console.log(_.object(["larry", "curly"], [30, 40, 50]));
 console.log(
   _.object([
     [30],
-    ['larry', 40],
-    ['curly', 50]
+    ["larry", 40],
+    ["curly", 50]
   ]));
 console.log(_.object(false));
 console.log(_.object(undefined));
@@ -495,16 +495,16 @@ console.log(_.lastIndexOf({}));
 console.log("\nTest case of _.sortedIndex(list, value, [iteratee])");
 console.log(_.sortedIndex([10, 20, 30, 40, 50], 35));
 var stooges = [{
-  name: 'moe',
+  name: "moe",
   age: 40
 }, {
-  name: 'curly',
+  name: "curly",
   age: 60
 }];
 console.log(_.sortedIndex(stooges, {
-  name: 'larry',
+  name: "larry",
   age: 50
-}, 'age'));
+}, "age"));
 console.log(_.sortedIndex(false));
 console.log(_.sortedIndex(undefined));
 console.log(_.sortedIndex([]));
@@ -531,28 +531,28 @@ console.log(_.findIndex({}));
 // Test case for _.findLastIndex(array, predicate)
 console.log("\nTest case for .findLastIndex(array, predicate)");
 var users = [{
-    'id': 1,
-    'name': 'Bob',
-    'last': 'Brown'
+    "id": 1,
+    "name": "Bob",
+    "last": "Brown"
   },
   {
-    'id': 2,
-    'name': 'Ted',
-    'last': 'White'
+    "id": 2,
+    "name": "Ted",
+    "last": "White"
   },
   {
-    'id': 3,
-    'name': 'Frank',
-    'last': 'James'
+    "id": 3,
+    "name": "Frank",
+    "last": "James"
   },
   {
-    'id': 4,
-    'name': 'Ted',
-    'last': 'Jones'
+    "id": 4,
+    "name": "Ted",
+    "last": "Jones"
   }
 ];
 console.log(_.findLastIndex(users, {
-  name: 'Ted'
+  name: "Ted"
 }));
 console.log(_.findLastIndex(false));
 console.log(_.findLastIndex(undefined));
@@ -581,11 +581,11 @@ const func = function(greeting) {
   return greeting + ": " + this.name
 };
 const func1 = _.bind(func, {
-  name: 'moe'
-}, 'hi')
+  name: "moe"
+}, "hi")
 console.log(func1());
 const func2 = _.bind(func, {
-  name: 'moe'
+  name: "moe"
 });
 console.log(func2("元気です"));
 console.log(func2());

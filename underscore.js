@@ -653,7 +653,7 @@ const _ = module.exports = {
     func = object.getFunc;
     if (arg.length !== 0) {
       var args = Array.apply(null, arg);
-      return object.getFunc.bind.apply(object.getFunc, [null].concat(args));
+      return func.bind.apply(func, [object].concat(args));
       //return func.apply(this, arg1.slice(2, arg1.length));
     } else {
       return func.bind(object);
