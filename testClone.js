@@ -196,6 +196,35 @@ console.log(_.shuffle([]));
 console.log(_.shuffle(0));
 console.log(_.shuffle({}));
 
+// Test case for _.sample(list)
+console.log("\nTest case for _.sample(list)");
+console.log(_.sample([1, 2, 3, 4, 5, 6]));
+console.log(_.sample([1, 2, 3, 4, 5, 6], 3));
+console.log(_.sample(false));
+console.log(_.sample(undefined));
+console.log(_.sample([]));
+console.log(_.sample(0));
+console.log(_.sample({}));
+
+// Test case for _.toArray(list)
+console.log("\nTest case for _.toArray(list)");
+console.log((function() {
+  return _.toArray(arguments).slice(1);
+})(1, 2, 3, 4));
+console.log(_.toArray(1, 2, 3, 4));
+console.log(_.toArray([1, 2, 3, 4]));
+console.log(_.toArray({
+  1: 'a',
+  2: 'b',
+  3: 'c',
+  4: 'd'
+}));
+console.log(_.toArray(false));
+console.log(_.toArray(undefined));
+console.log(_.toArray([]));
+console.log(_.toArray(0));
+console.log(_.toArray({}));
+
 
 //**Arrays test cases**//
 

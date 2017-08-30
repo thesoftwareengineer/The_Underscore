@@ -221,6 +221,25 @@ const _ = module.exports = {
     });
   },
 
+  // Return random sample of a list.
+  sample: function(list, n) {
+    if (!list || Object.keys(list).length === 0) return void 0;
+    if (!n) n = 1;
+    return n == 1 ? this.shuffle(list)[0] : this.shuffle(list).slice(0, n);
+  },
+
+  // Creates list from iterable types.
+  toArray: function(list) {
+    if (!list || Object.keys(list).length === 0) return [];
+    // Added keys to take into account for dictionaries
+    keys = Object.keys(list);
+    const lst = [];
+    for (var i = 0; i < keys.length; i++) {
+      lst.push(list[keys[i]]);
+    }
+    return lst;
+  },
+
   /**Arrays**/
 
   // Return first n elements in array by default n = 1
