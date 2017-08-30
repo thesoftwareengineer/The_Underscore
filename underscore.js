@@ -647,12 +647,12 @@ const _ = module.exports = {
 
   // Binds function to an object and can pass arguments
   // to pre-fill some or all arguments.
-  bind: function(func, object, ...arg) {
+  bind: function(func, object, ...args) {
     if (!(func instanceof Function)) throw new TypeError("Bind must be called on a function", "underscore.js", 650);
     object["getFunc"] = func;
     func = object.getFunc;
-    if (arg.length !== 0) {
-      const args = Array.apply(null, arg);
+    if (args.length !== 0) {
+      var args = Array.prototype.slice.call(args);
       return func.bind.apply(func, [object].concat(args));
       //return func.apply(this, arg1.slice(2, arg1.length));
     } else {
@@ -670,8 +670,8 @@ const _ = module.exports = {
   },
 
   // Partially fill in arguments in a function
-  partial: function(func, ...arg) {
-    var args = Array.prototype.slice.call(arg);
+  partial: function(func, ...args) {
+    var args = Array.prototype.slice.call(args);
     while (args.indexOf(_) !== -1) args.splice(args.indexOf(_), 1, null);
     const length = func.length;
     //console.log(func.length, args.length);
@@ -691,6 +691,26 @@ const _ = module.exports = {
       //console.log(args);
       return func.apply(func, args);
     }
+  },
+
+  memoize: function(func, hashFunction) {
+    const cache = {};
+    const memoized = function() {
+      const argument = hashFunction ? hashFunction(arguments) : Array.prototype.slice.call(arguments);
+      var result = cache[argument];
+      if (result === undefined) {
+        result = func.apply(func, arguments);
+        cache[argument] = result;
+      }
+      return result
+    }
+    return memoized;
+  },
+
+  delay: function(func, wait, ...args) {
+    wait += new Date().getTime();
+    while (new Date() < wait) {}
+    return func.apply(func, args);
   }
   /**Objects**/
 

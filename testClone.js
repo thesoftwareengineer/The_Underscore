@@ -656,3 +656,52 @@ console.log(vol3(2));
 // console.log(func3());
 // func3 = _.partial(0);
 // console.log(func3());
+
+
+// Test case for _.memoize(function, [hashFunction])
+console.log("\nTest case for _.memoize(function, [hashFunction])");
+const hash = function(n) {
+  return n;
+}
+const fibonacci = _.memoize(function(n) {
+  return n < 2 ? n : fibonacci(n - 1) + fibonacci(n - 2);
+})
+console.time("Fib");
+console.log(fibonacci(1000), hash);
+console.timeEnd("Fib");
+console.time("Fib");
+console.log(fibonacci(1000), hash);
+console.timeEnd("Fib");
+// const falsy = _.memoize(false);
+// console.time("Falsy");
+// console.log(falsy());
+// console.timeEnd("Falsy");
+// const falsy = _.memoize(undefined);
+// console.time("Falsy");
+// console.log(falsy());
+// console.timeEnd("Falsy");
+// const falsy = _.memoize([]);
+// console.time("Falsy");
+// console.log(falsy());
+// console.timeEnd("Falsy");
+// const falsy = _.memoize(0);
+// console.time("Falsy");
+// console.log(falsy());
+// console.timeEnd("Falsy");
+// const falsy = _.memoize({});
+// console.time("Falsy");
+// console.log(falsy());
+// console.timeEnd("Falsy");
+
+
+// Test case for _.delay(function, wait, *arguments)
+// console.log("\nTest case for _.delay(function, wait, *arguments)");
+// var log = _.bind(console.log, console);
+// _.delay(log, 1000, 'logged later');
+// log = _.bind(console.log, log, fibonacci(1000));
+// _.delay(log, 5000);
+// console.log(_.delay(false));
+// console.log(_.delay(undefined));
+// console.log(_.delay([]));
+// console.log(_.delay(0));
+// console.log(_.delay({}));
