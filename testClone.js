@@ -174,13 +174,33 @@ console.log(_.indexBy(false));
 console.log(_.indexBy(undefined));
 console.log(_.indexBy([]));
 console.log(_.indexBy(0));
-console.log(_.indexBy({}))
+console.log(_.indexBy({}));
+
+// Test case for _.countBy(list, iteratee)
+console.log("\nTest case for _.countBy(list, iteratee)");
+console.log(_.countBy([1, 2, 3, 4, 5], function(num) {
+  return num % 2 == 0 ? 'even' : 'odd';
+}));
+console.log(_.countBy(false));
+console.log(_.countBy(undefined));
+console.log(_.countBy([]));
+console.log(_.countBy(0));
+console.log(_.countBy({}));
+
+// Test case for _.shuffle(list)
+console.log("\nTest case for _.shuffle(list)");
+console.log(_.shuffle([1, 2, 3, 4, 5, 6]));
+console.log(_.shuffle(false));
+console.log(_.shuffle(undefined));
+console.log(_.shuffle([]));
+console.log(_.shuffle(0));
+console.log(_.shuffle({}));
 
 
 //**Arrays test cases**//
 
-// Test case for first(array, [n]);
-console.log("\nTest case for first(array, [n])");
+// Test case for _.first(array, [n]);
+console.log("\nTest case for _.first(array, [n])");
 console.log(_.first([10, 1, 3, 5]));
 console.log(_.first([10, 1, 3, 5], 2));
 console.log(_.first([10, 1, 3, 5], 42));
@@ -190,8 +210,8 @@ console.log(_.first([]));
 console.log(_.first(0));
 console.log(_.first({}));
 
-// Test case for initial(array, [n]);
-console.log("\nTest case for intial(array, [n])");
+// Test case for _.initial(array, [n]);
+console.log("\nTest case for _.intial(array, [n])");
 console.log(_.initial([10, 1, 3, 5]));
 console.log(_.initial([10, 1, 3, 5], 2));
 console.log(_.initial([10, 1, 3, 5], 42));
@@ -201,8 +221,8 @@ console.log(_.initial([]));
 console.log(_.initial(0));
 console.log(_.initial({}));
 
-// Test case for last(array, [n]);
-console.log("\nTest case for last(array, [n])");
+// Test case for _.last(array, [n]);
+console.log("\nTest case for _.last(array, [n])");
 console.log(_.last([10, 1, 3, 5]));
 console.log(_.last([10, 1, 3, 5], 2));
 console.log(_.last([10, 1, 3, 5], 42));
@@ -212,8 +232,8 @@ console.log(_.last([]));
 console.log(_.last(0));
 console.log(_.last({}));
 
-// Test case for rest(array, [n]);
-console.log("\nTest case for rest(array, [n])");
+// Test case for _.rest(array, [n]);
+console.log("\nTest case for _.rest(array, [n])");
 console.log(_.rest([10, 1, 3, 5]));
 console.log(_.rest([10, 1, 3, 5], 2));
 console.log(_.rest([10, 1, 3, 5], 42));
@@ -223,8 +243,8 @@ console.log(_.rest([]));
 console.log(_.rest(0));
 console.log(_.rest({}));
 
-// Test case for compact(array);
-console.log("\nTest case for compact(array)");
+// Test case for _.compact(array);
+console.log("\nTest case for _.compact(array)");
 console.log(_.compact([10, 1, 3, 5, NaN, '0', false]));
 console.log(_.compact([10, 1, 0, 3, 5]));
 console.log(_.compact([undefined, 10, 1, 3, 5]));
@@ -234,8 +254,8 @@ console.log(_.compact([]));
 console.log(_.compact(0));
 console.log(_.compact({}));
 
-// Test case for flatten(array, [shallow]);
-console.log("\nTest case for flatten(array, [shallow])");
+// Test case for _.flatten(array, [shallow]);
+console.log("\nTest case for _.flatten(array, [shallow])");
 console.log(_.flatten([10, 1, 3, 5, [12, 2, [23]]], true));
 console.log(_.flatten([10, 1, 0, 3, 5]));
 console.log(_.flatten([
@@ -247,8 +267,8 @@ console.log(_.flatten([]));
 console.log(_.flatten(0));
 console.log(_.flatten({}));
 
-// Test case for without(array, *values)
-console.log("\nTest case for without(array, *values)");
+// Test case for _.without(array, *values)
+console.log("\nTest case for _.without(array, *values)");
 console.log(_.without([1, 2, 1, 0, 3, 1, 4], 0, 1));
 console.log(_.without([1, 2, 1, 0, 3, 1, 4]));
 console.log(_.without(false));
@@ -257,8 +277,8 @@ console.log(_.without([]));
 console.log(_.without(0));
 console.log(_.without({}));
 
-// Test case for union(array, *values)
-console.log("\nTest case for union(array, *values)");
+// Test case for _.union(array, *values)
+console.log("\nTest case for _.union(array, *values)");
 console.log(_.union([1, 2, 1, 0, 3, 1, 4], [0], [1, [22, 1], 3]));
 console.log(_.union([1, 2, 1, 0, 3, 1, 4]));
 console.log(_.union([1, 2], false));
@@ -268,8 +288,8 @@ console.log(_.union([]));
 console.log(_.union(0));
 console.log(_.union({}));
 
-// Test case for intersection(*arrays)
-console.log("\nTest case for intersection(*arrays)");
+// Test case for _.intersection(*arrays)
+console.log("\nTest case for _.intersection(*arrays)");
 console.log(_.intersection([1, 2, 3], [101, 2, 1, 10], [2, 1]));
 console.log(_.intersection(undefined, [101, 2, 1, 10], [2, 1]));
 console.log(_.intersection([1, 2, 3], false, [2, 1]));
@@ -279,8 +299,8 @@ console.log(_.intersection([]));
 console.log(_.intersection(0));
 console.log(_.intersection({}));
 
-// Test case for difference(*arrays)
-console.log("\nTest case for difference(*arrays)");
+// Test case for _.difference(*arrays)
+console.log("\nTest case for _.difference(*arrays)");
 console.log(_.difference([1, 2, 3], [101, 2, 1, 10], [2, 1]));
 console.log(_.difference(undefined, [101, 2, 1, 10], [2, 1]));
 console.log(_.difference([1, 2, 3], false, [2, 1]));

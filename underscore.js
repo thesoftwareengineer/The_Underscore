@@ -24,6 +24,8 @@ const genCb = function(iteratee) {
   }
 }
 
+// Helper function that creates predicate returning only
+// true or false.
 const genPredicate = function(predicate) {
   if (predicate instanceof Function) {
     return predicate;
@@ -69,6 +71,12 @@ const binarySearch = function(array, value, cb, toInsert) {
   } else {
     return currIdx;
   }
+}
+
+const randInt = function(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min;
 }
 
 const _ = module.exports = {
@@ -138,11 +146,11 @@ const _ = module.exports = {
   // iteratee criteria.
   sortBy: function(list, iteratee) {
     if (!list) return [];
-    if (iteratee != null) iteratee = genCb(iteratee);
+    iteratee = genCb(iteratee);
     const indices = this.range(list.length);
     var sorted = indices.sort(function(a, b) {
-      const aVal = iteratee ? iteratee(list[a]) : list[a];
-      const bVal = iteratee ? iteratee(list[b]) : list[b];
+      const aVal = iteratee(list[a]);
+      const bVal = iteratee(list[b]);
       return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
     })
     for (var i = 0; i < list.length; i++) {
@@ -154,12 +162,12 @@ const _ = module.exports = {
   //Groups sets by result from iteratee
   groupBy: function(list, iteratee) {
     if (!list || Object.keys(list).length === 0) return {};
-    if (iteratee != null) iteratee = genCb(iteratee);
+    iteratee = genCb(iteratee);
     const groups = {};
-    var key = iteratee ? iteratee(list[0]) : list[0];
+    var key = iteratee(list[0]);
     groups[key] = [list[0]];
     for (var i = 1; i < Object.keys(list).length; i++) {
-      const newKey = iteratee ? iteratee(list[i]) : list[i];
+      const newKey = iteratee(list[i]);
       if (key === newKey) {
         groups[key].push(list[i]);
       } else {
@@ -174,17 +182,43 @@ const _ = module.exports = {
     return groups;
   },
 
-  indexBy(list, iteratee) {
+  // Return object with key for each object
+  indexBy: function(list, iteratee) {
     if (!list || Object.keys(list).length === 0) return {};
-    if (iteratee != null) iteratee = genCb(iteratee);
+    iteratee = genCb(iteratee);
     const indexed = {};
-    var key = iteratee ? iteratee(list[0]) : list[0];
+    var key = iteratee(list[0]);
     indexed[key] = list[0];
     for (var i = 1; i < Object.keys(list).length; i++) {
-      key = iteratee ? iteratee(list[i]) : list[0];
+      key = iteratee(list[i]);
       indexed[key] = list[i];
     }
     return indexed;
+  },
+
+  // Return count of number of elements that belong to a group
+  // uses iteratee to choose group to which they belong.
+  countBy: function(list, iteratee) {
+    if (!list || Object.keys(list).length === 0) return {};
+    iteratee = genCb(iteratee);
+    const counts = {};
+    for (var i = 0; i < list.length; i++) {
+      const key = iteratee(list[i]);
+      if (counts[key] !== undefined) {
+        counts[key] += 1;
+      } else {
+        counts[key] = 1;
+      }
+    }
+    return counts;
+  },
+
+  // Returns shuffled copy of list.
+  shuffle: function(list) {
+    if (!list || Object.keys(list).length === 0) return [];
+    return list.sort(function(a, b) {
+      return randInt(-1, 2);
+    });
   },
 
   /**Arrays**/

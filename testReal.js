@@ -157,7 +157,7 @@ console.log(_.groupBy(false));
 console.log(_.groupBy(undefined));
 console.log(_.groupBy([]));
 console.log(_.groupBy(0));
-console.log(_.groupBy({}))
+console.log(_.groupBy({}));
 
 // Test case for _.indexBy(list, iteratee)
 console.log("\nTest case for _.indexBy(list, iteratee)");
@@ -175,7 +175,27 @@ console.log(_.indexBy(false));
 console.log(_.indexBy(undefined));
 console.log(_.indexBy([]));
 console.log(_.indexBy(0));
-console.log(_.indexBy({}))
+console.log(_.indexBy({}));
+
+// Test case for _.countBy(list, iteratee)
+console.log("\nTest case for _.countBy(list, iteratee)");
+console.log(_.countBy([1, 2, 3, 4, 5], function(num) {
+  return num % 2 == 0 ? 'even' : 'odd';
+}));
+console.log(_.countBy(false));
+console.log(_.countBy(undefined));
+console.log(_.countBy([]));
+console.log(_.countBy(0));
+console.log(_.countBy({}));
+
+// Test case for _.shuffle(list)
+console.log("\nTest case for _.shuffle(list)");
+console.log(_.shuffle([1, 2, 3, 4, 5, 6]));
+console.log(_.shuffle(false));
+console.log(_.shuffle(undefined));
+console.log(_.shuffle([]));
+console.log(_.shuffle(0));
+console.log(_.shuffle({}));
 
 //**Arrays test cases**//
 
