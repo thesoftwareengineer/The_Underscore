@@ -571,3 +571,31 @@ console.log(_.range(undefined));
 console.log(_.range([]));
 console.log(_.range(0));
 console.log(_.range({}));
+
+
+/**Functions test cases**/
+
+// Test case _.bind(function, object, *agruments)
+console.log("\nTest case for _.bind(function, object, *arguments");
+const func = function(greeting) {
+  return greeting + ": " + this.name
+};
+const func1 = _.bind(func, {
+  name: 'moe'
+}, 'hi')
+console.log(func1());
+const func2 = _.bind(func, {
+  name: 'moe'
+});
+console.log(func2("元気です"));
+console.log(func2());
+/**Note: Falsy values throw type error will leave uncomment
+   to test.**/
+// var func3 = _.bind(false);
+// console.log(func3());
+// func3 = _.bind(undefined);
+// console.log(func3());
+// func3 = _.bind([]);
+// console.log(func3());
+// func3 = _.bind(0);
+// console.log(func3());

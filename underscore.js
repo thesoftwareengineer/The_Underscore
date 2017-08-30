@@ -622,7 +622,7 @@ const _ = module.exports = {
 
   // Creates array containing number from [start, end)
   // Incrementing by step.
-  range(start, stop, step) {
+  range: function(start, stop, step) {
     if (arguments.length === 1) {
       stop = start;
       start = 0;
@@ -641,9 +641,24 @@ const _ = module.exports = {
       }
     }
     return numbers;
-  }
+  },
 
   /**Functions**/
+
+  // Binds function to an object and can pass arguments
+  // to pre-fill some or all arguments.
+  bind: function(func, object, arg1) {
+    if (!(func instanceof Function)) throw new TypeError("Bind must be called on a function", "underscore.js", 650);
+    object["getFunc"] = func;
+    func = object.getFunc;
+    if (arg1) {
+      var args = Array.apply(null, arguments);
+      return func.bind(object, args.slice(2, args.length));
+      //return func.apply(this, arg1.slice(2, arg1.length));
+    } else {
+      return func.bind(object);
+    }
+  }
 
   /**Objects**/
 
