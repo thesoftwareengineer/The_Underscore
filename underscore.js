@@ -791,6 +791,7 @@ const _ = module.exports = {
     return firstOnly;
   },
 
+  // Will only run function after n times.
   after: function(count, func) {
     var calls = count;
     const runAfter = function() {
@@ -802,6 +803,28 @@ const _ = module.exports = {
       }
     }
     return runAfter;
+  },
+
+  // Opposite of the after function will
+  // only run n times.
+  before: function(count, func) {
+    var calls = 1;
+    const runBefore = function() {
+      if (calls < count) {
+        calls++;
+        return func.apply(func, arguments);
+      } else {
+        calls++;
+        return;
+      }
+    }
+    return runBefore;
+  },
+
+  // Wraps function in another function,
+  // and passes it as the first argument.
+  wrap: function(func, wrapper) {
+    return wrapper.bind.apply(wrapper, [null].concat(func));
   }
   /**Objects**/
 

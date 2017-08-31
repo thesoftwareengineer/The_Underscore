@@ -758,3 +758,25 @@ _ = require("./underscoreMin");
 //   console.log(i);
 //   print();
 // }
+
+// Test case for _.before(count, function)
+// console.log("\nTest case for _.before(count, function)");
+// const logger = function() {
+//   console.log("Printing before 10 times");
+// }
+// const count = 10;
+// const print = _.before(count, logger);
+// for (var i = 0; i < 20; i++) {
+//   console.log(i);
+//   print();
+// }
+
+// Test case for _.wrap(function, wrapper)
+console.log("\nTest case for _.wrap(function, wrapper)");
+var hello = function(name) {
+  return "hello: " + name;
+};
+hello = _.wrap(hello, function(func) {
+  return "before, " + func("moe") + ", after";
+});
+console.log(hello());
