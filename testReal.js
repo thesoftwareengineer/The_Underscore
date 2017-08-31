@@ -705,13 +705,35 @@ console.timeEnd("Fib");
 // console.log(_.delay({}));
 
 // Test case for _.defer(function, *arguments)
-console.log("\nTest case for _.defer(function, *arguments)");
-var log = _.bind(console.log, console);
-_.defer(log, 'logged later');
-log = _.bind(console.log, log, fibonacci(1000));
-_.defer(log);
+// console.log("\nTest case for _.defer(function, *arguments)");
+// var log = _.bind(console.log, console);
+// _.defer(log, 'logged later');
+// log = _.bind(console.log, log, fibonacci(1000));
+// _.defer(log);
 // console.log(_.defer(false));
 // console.log(_.defer(undefined));
 // console.log(_.defer([]));
 // console.log(_.defer(0));
 // console.log(_.defer({}));
+
+// Test case for _.throttle(func, wait)
+// console.log("\nTest case for _.throttle(func, wait)");
+// logger = _.bind(console.log, console);
+// var throttled = _.throttle(logger, 10000);
+// throttled("Should display before defer()")
+// while (true) {
+//   throttled("Should display before defer()");
+// }
+
+
+// Test case for _.debounce(func, wait)
+// console.log("\nTest case for _.debounce(func, wait)");
+// var logger = _.bind(console.log, console);
+// var debounced = _.debounce(logger, 1000, true);
+// debounced("Should display immediately");
+// debounced = _.debounce(logger, 1000);
+// debounced("Should display after 1 sec");
+// Will never run
+// while (true) {
+//   debounced("Should display before defer()");
+// }

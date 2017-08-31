@@ -713,18 +713,68 @@ const _ = module.exports = {
 
   // Simple delay function that waits for execution of function
   // the same number of seconds.
+  // delay: function(func, wait, ...args) {
+  //   wait += new Date().getTime();
+  //   while (new Date() < wait) {}
+  //   return func.apply(func, args);
+  // },
+
+  // Second version of delay trying to use setTimeout this
+  // time, inspired by what I learned from
   delay: function(func, wait, ...args) {
-    wait += new Date().getTime();
-    while (new Date() < wait) {}
-    return func.apply(func, args);
+    const delayed = function() {
+      return func.apply(func, args);
+    }
+    setTimeout(delayed, wait);
   },
 
   // Defers invoking function until call stack has cleared.
   defer: function(func, ...args) {
-    var wait = 1;
-    wait += new Date().getTime();
-    while (new Date() < wait) {}
-    return func.apply(func, args);
+    const delayed = function() {
+      return func.apply(func, args);
+    }
+    setTimeout(delayed, 0);
+  },
+
+  // This function creates throttled verstion of Functions
+  // calls original function at most once per wait.
+  throttle: function(func, wait) {
+    const cache = {};
+    cache.wait = wait;
+    cache.first = true;
+    const throttled = function() {
+      if (cache.first) {
+        cache.first = false;
+        func.apply(func, arguments)
+      }
+      if (!cache.start) cache.start = new Date().getTime();
+      cache.end = new Date();
+      if (cache.end - cache.start >= cache.wait) {
+        cache.start = new Date().getTime();
+        func.apply(func, arguments);
+      }
+    }
+    return throttled;
+  },
+
+  // Did not understand debounce so used version found in:
+  // https://davidwalsh.name/function-debounce with a few
+  // modification to make it more straightforward.
+  // Similar to throttle except that call won't run unless
+  // Wait time has passed after last call.
+  debounce: function(func, wait, immediate) {
+    var timeout;
+    const debounced = function() {
+      const args = arguments;
+      const cb = function() {
+        timeout = null;
+        if (!immediate) func.apply(func, args);
+      }
+      if (immediate && !timeout) func.apply(func, args);
+      clearTimeout(timeout);
+      timeout = setTimeout(cb, wait);
+    }
+    return debounced;
   }
   /**Objects**/
 
