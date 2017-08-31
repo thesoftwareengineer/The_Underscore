@@ -775,6 +775,33 @@ const _ = module.exports = {
       timeout = setTimeout(cb, wait);
     }
     return debounced;
+  },
+
+  // Version of function can only run once.
+  once: function(func) {
+    var ran = false;
+    const firstOnly = function() {
+      if (!ran) {
+        ran = true;
+        return func.apply(func, arguments);
+      } else {
+        return;
+      }
+    }
+    return firstOnly;
+  },
+
+  after: function(count, func) {
+    var calls = count;
+    const runAfter = function() {
+      if (calls === 1) {
+        return func.apply(func, arguments);
+      } else {
+        calls--;
+        return;
+      }
+    }
+    return runAfter;
   }
   /**Objects**/
 
