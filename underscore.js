@@ -674,7 +674,8 @@ const _ = module.exports = {
     var args = Array.prototype.slice.call(args);
     while (args.indexOf(_) !== -1) args.splice(args.indexOf(_), 1, null);
     const length = func.length;
-    //console.log(func.length, args.length);
+    // Make sure args array is the same size as the number
+    // of agruments required.
     if (args.length < length) {
       for (var i = 0; i <= length - args.length; i++) {
         args.push(null);
@@ -693,6 +694,9 @@ const _ = module.exports = {
     }
   },
 
+  // Function that takes in a function and stores in results
+  // in a cache so that subsequent calls can be looked up
+  // instead of invoking function again.
   memoize: function(func, hashFunction) {
     const cache = {};
     const memoized = function() {
@@ -707,7 +711,17 @@ const _ = module.exports = {
     return memoized;
   },
 
+  // Simple delay function that waits for execution of function
+  // the same number of seconds.
   delay: function(func, wait, ...args) {
+    wait += new Date().getTime();
+    while (new Date() < wait) {}
+    return func.apply(func, args);
+  },
+
+  // Defers invoking function until call stack has cleared.
+  defer: function(func, ...args) {
+    var wait = 1;
     wait += new Date().getTime();
     while (new Date() < wait) {}
     return func.apply(func, args);
