@@ -773,11 +773,20 @@ _ = require("./underscore");
 
 
 // Test case for _.wrap(function, wrapper)
-console.log("\nTest case for _.wrap(function, wrapper)");
-var hello = function(name) {
-  return "hello: " + name;
-};
-hello = _.wrap(hello, function(func) {
-  return "before, " + func("moe") + ", after";
-});
-console.log(hello());
+// console.log("\nTest case for _.wrap(function, wrapper)");
+// var hello = function(name) {
+//   return "hello: " + name;
+// };
+// hello = _.wrap(hello, function(func) {
+//   return "before, " + func("moe") + ", after";
+// });
+// console.log(hello());
+
+// Test case for _.negate(predicate)
+// console.log("\nTest case for _.negate(predicate)");
+// const negPred = _.negate(function(val) {
+//   return val;
+// });
+// console.log(negPred(0));
+// const isFalsy = _.negate(Boolean);
+// console.log(isFalsy([-2, -1, 0, 1, 2]));

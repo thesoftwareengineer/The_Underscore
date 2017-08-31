@@ -825,6 +825,14 @@ const _ = module.exports = {
   // and passes it as the first argument.
   wrap: function(func, wrapper) {
     return wrapper.bind.apply(wrapper, [null].concat(func));
+  },
+
+  // Returns negated version of predicate function
+  // simple implementation.
+  negate: function(predicate) {
+    return function() {
+      return !predicate.apply(predicate, arguments);
+    }
   }
   /**Objects**/
 
