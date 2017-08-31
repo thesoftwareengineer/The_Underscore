@@ -824,7 +824,9 @@ const _ = module.exports = {
   // Wraps function in another function,
   // and passes it as the first argument.
   wrap: function(func, wrapper) {
-    return wrapper.bind.apply(wrapper, [null].concat(func));
+    // return wrapper.bind.apply(wrapper, [null].concat(func));
+    // Alternate way
+    return _.partial(wrapper, func)
   },
 
   // Returns negated version of predicate function
@@ -833,6 +835,18 @@ const _ = module.exports = {
     return function() {
       return !predicate.apply(predicate, arguments);
     }
+  },
+
+  compose: function(...func) {
+    const composed = function() {
+      var i = func.length - 1;
+      var mega = func[i].apply(func[i], arguments);
+      for (i--; i >= 0; i--) {
+        mega = func[i].call(func[i], mega);
+      }
+      return mega;
+    }
+    return composed;
   }
   /**Objects**/
 

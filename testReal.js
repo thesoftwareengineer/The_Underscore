@@ -789,3 +789,14 @@ _ = require("./underscoreMin");
 // console.log(negPred(0));
 // const isFalsy = _.negate(Boolean);
 // console.log(isFalsy([-2, -1, 0, 1, 2]));
+
+// Test case for _.compose(*functions)
+// console.log("\nTest case for _.compose(*functions)");
+// var greet = function(name) {
+//   return "hi: " + name;
+// };
+// var exclaim = function(statement) {
+//   return statement.toUpperCase() + "!";
+// };
+// var welcome = _.compose(greet, exclaim);
+// console.log(welcome('moe'));
