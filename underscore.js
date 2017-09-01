@@ -9,10 +9,14 @@
 const genCb = function(iteratee) {
   if (iteratee instanceof Function) {
     return iteratee;
+  } else if (iteratee === "length") {
+    return function(obj) {
+      return obj.length;
+    }
   } else {
     return function(obj) {
       if (Object.keys(obj).length !== 0) {
-        return obj[iteratee]
+        return obj[iteratee];
       } else {
         return iteratee;
       }
@@ -20,13 +24,16 @@ const genCb = function(iteratee) {
   }
 }
 
+// Helper function that creates predicate returning only
+// true or false.
 const genPredicate = function(predicate) {
   if (predicate instanceof Function) {
     return predicate;
   } else {
     return function(obj) {
       if (Object.keys(obj).length !== 0) {
-        return obj[0] === predicate[0]
+        const idx = Object.keys(predicate)[0];
+        return obj[idx] === predicate[idx];
       } else {
         return obj === predicate;
       }
@@ -67,10 +74,17 @@ const binarySearch = function(array, value, cb, toInsert) {
   }
 }
 
+const randInt = function(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
 const _ = module.exports = {
 
   /**Collections**/
-  each: function(list, iteratee) {
+  
+    each: function(list, iteratee) {
     if (list instanceof Array) {
       for (var i = 0; i < list.length; i++) {
         iteratee(list[i]);
@@ -82,8 +96,187 @@ const _ = module.exports = {
       }
     }
     return list;
+  
+  // "Plucks" all values that match key in each
+  // element and returns them as an array.
+  pluck: function(list, propertyName) {
+    if (!list) {
+      return [];
+    }
+    const plucked = [];
+    for (var i = 0; i < list.length; i++) {
+      plucked.push(list[i][propertyName]);
+    }
+    return plucked;
   },
 
+  // Returns max on a list and uses iteratee if given.
+  // If empty return -Infinity if value is non-numeric,
+  // it will ignore.
+  max: function(list, iteratee) {
+    if (!list || !(list instanceof Array) || list.length === 0) {
+      return -Infinity;
+    }
+    if (iteratee != null) iteratee = genCb(iteratee);
+    var max = list[0];
+    for (var i = 0; i < list.length; i++) {
+      const value = list[i];
+      const compute = iteratee ? iteratee(value) : value;
+      if (isNaN(compute)) {
+        return -Infinity;
+      }
+      const currMax = iteratee ? iteratee(max) : max;
+      if (currMax < compute) {
+        max = value;
+      }
+    }
+    return max;
+  },
+
+  // Returns min on a list and uses iteratee if given.
+  // If empty return Infinity if value is non-numeric,
+  // it will ignore.
+  min: function(list, iteratee) {
+    if (!list || !(list instanceof Array) || list.length === 0) {
+      return Infinity;
+    }
+    if (iteratee != null) iteratee = genCb(iteratee);
+    var min = list[0];
+    for (var i = 0; i < list.length; i++) {
+      const value = list[i];
+      const compute = iteratee ? iteratee(value) : value;
+      if (isNaN(compute)) {
+        return Infinity;
+      }
+      const currmin = iteratee ? iteratee(min) : min;
+      if (currmin > compute) {
+        min = value;
+      }
+    }
+    return min;
+  },
+
+  // Returns a sorted copy of list in ascending order
+  // iteratee criteria.
+  sortBy: function(list, iteratee) {
+    if (!list) return [];
+    iteratee = genCb(iteratee);
+    const indices = this.range(list.length);
+    var sorted = indices.sort(function(a, b) {
+      const aVal = iteratee(list[a]);
+      const bVal = iteratee(list[b]);
+      return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+    })
+    for (var i = 0; i < list.length; i++) {
+      sorted[i] = list[sorted[i]];
+    }
+    return sorted;
+  },
+
+  //Groups sets by result from iteratee
+  groupBy: function(list, iteratee) {
+    if (!list || Object.keys(list).length === 0) return {};
+    iteratee = genCb(iteratee);
+    const groups = {};
+    var key = iteratee(list[0]);
+    groups[key] = [list[0]];
+    for (var i = 1; i < Object.keys(list).length; i++) {
+      const newKey = iteratee(list[i]);
+      if (key === newKey) {
+        groups[key].push(list[i]);
+      } else {
+        key = newKey;
+        if (groups[key] === undefined) {
+          groups[newKey] = [list[i]];
+        } else {
+          groups[newKey].push(list[i]);
+        }
+      }
+    }
+    return groups;
+  },
+
+  // Return object with key for each object
+  indexBy: function(list, iteratee) {
+    if (!list || Object.keys(list).length === 0) return {};
+    iteratee = genCb(iteratee);
+    const indexed = {};
+    var key = iteratee(list[0]);
+    indexed[key] = list[0];
+    for (var i = 1; i < Object.keys(list).length; i++) {
+      key = iteratee(list[i]);
+      indexed[key] = list[i];
+    }
+    return indexed;
+  },
+
+  // Return count of number of elements that belong to a group
+  // uses iteratee to choose group to which they belong.
+  countBy: function(list, iteratee) {
+    if (!list || Object.keys(list).length === 0) return {};
+    iteratee = genCb(iteratee);
+    const counts = {};
+    for (var i = 0; i < list.length; i++) {
+      const key = iteratee(list[i]);
+      if (counts[key] !== undefined) {
+        counts[key] += 1;
+      } else {
+        counts[key] = 1;
+      }
+    }
+    return counts;
+  },
+
+  // Returns shuffled copy of list.
+  shuffle: function(list) {
+    if (!list || Object.keys(list).length === 0) return [];
+    return list.sort(function(a, b) {
+      return randInt(-1, 2);
+    });
+  },
+
+  // Return random sample of a list.
+  sample: function(list, n) {
+    if (!list || Object.keys(list).length === 0) return void 0;
+    if (!n) n = 1;
+    return n == 1 ? this.shuffle(list)[0] : this.shuffle(list).slice(0, n);
+  },
+
+  // Creates list from iterable types.
+  toArray: function(list) {
+    if (!list || Object.keys(list).length === 0) return [];
+    // Added keys to take into account for dictionaries
+    keys = Object.keys(list);
+    const lst = [];
+    for (var i = 0; i < keys.length; i++) {
+      lst.push(list[keys[i]]);
+    }
+    return lst;
+  },
+
+  // Returns size of a list
+  size: function(list) {
+    if (!list || Object.keys(list).length === 0) return 0;
+    return Object.keys(list).length;
+  },
+
+  partition: function(array, predicate) {
+    if (!array || Object.keys(array).length === 0) return [
+      [],
+      []
+    ];
+    if (predicate != null) predicate = genPredicate(predicate);
+    const arr1 = [];
+    const arr2 = [];
+    for (var i = 0; i < array.length; i++) {
+      if (predicate(array[i])) {
+        arr1.push(array[i]);
+      } else {
+        arr2.push(array[i]);
+      }
+    }
+    return [arr1, arr2];
+  },
 
   /**Arrays**/
 
@@ -442,7 +635,7 @@ const _ = module.exports = {
 
   // Creates array containing number from [start, end)
   // Incrementing by step.
-  range(start, stop, step) {
+  range: function(start, stop, step) {
     if (arguments.length === 1) {
       stop = start;
       start = 0;
@@ -461,10 +654,213 @@ const _ = module.exports = {
       }
     }
     return numbers;
-  }
+  },
 
   /**Functions**/
 
+  // Binds function to an object and can pass arguments
+  // to pre-fill some or all arguments.
+  bind: function(func, object, ...args) {
+    if (!(func instanceof Function)) throw new TypeError("Bind must be called on a function", "underscore.js", 650);
+    object["getFunc"] = func;
+    func = object.getFunc;
+    if (args.length !== 0) {
+      var args = Array.prototype.slice.call(args);
+      return func.bind.apply(func, [object].concat(args));
+      //return func.apply(this, arg1.slice(2, arg1.length));
+    } else {
+      return func.bind(object);
+    }
+  },
+
+  // Binds several methods to an object run in conext invoked.
+  bindAll: function(object, ...methods) {
+    if (!object || methods.length === 0) throw new Error("bindAll must be passed function names");
+    for (var i = 0; i < methods.length; i++) {
+      object[methods[i]] = object[methods[i]].bind(object);
+    }
+    return object;
+  },
+
+  // Partially fill in arguments in a function
+  partial: function(func, ...args) {
+    var args = Array.prototype.slice.call(args);
+    while (args.indexOf(_) !== -1) args.splice(args.indexOf(_), 1, null);
+    const length = func.length;
+    // Make sure args array is the same size as the number
+    // of agruments required.
+    if (args.length < length) {
+      for (var i = 0; i <= length - args.length; i++) {
+        args.push(null);
+      }
+    }
+    return function() {
+      var inArgs = Array.prototype.slice.call(arguments);
+      for (var i = 0; i < length; i++) {
+        if (i >= length || args[i] === null) {
+          args[i] = inArgs.shift();
+        }
+      }
+      args = Array.apply(null, args);
+      //console.log(args);
+      return func.apply(func, args);
+    }
+  },
+
+  // Function that takes in a function and stores in results
+  // in a cache so that subsequent calls can be looked up
+  // instead of invoking function again.
+  memoize: function(func, hashFunction) {
+    const cache = {};
+    const memoized = function() {
+      const argument = hashFunction ? hashFunction(arguments) : Array.prototype.slice.call(arguments);
+      var result = cache[argument];
+      if (result === undefined) {
+        result = func.apply(func, arguments);
+        cache[argument] = result;
+      }
+      return result
+    }
+    return memoized;
+  },
+
+  // Simple delay function that waits for execution of function
+  // the same number of seconds.
+  // delay: function(func, wait, ...args) {
+  //   wait += new Date().getTime();
+  //   while (new Date() < wait) {}
+  //   return func.apply(func, args);
+  // },
+
+  // Second version of delay trying to use setTimeout this
+  // time, inspired by what I learned from
+  delay: function(func, wait, ...args) {
+    const delayed = function() {
+      return func.apply(func, args);
+    }
+    setTimeout(delayed, wait);
+  },
+
+  // Defers invoking function until call stack has cleared.
+  defer: function(func, ...args) {
+    const delayed = function() {
+      return func.apply(func, args);
+    }
+    setTimeout(delayed, 0);
+  },
+
+  // This function creates throttled verstion of Functions
+  // calls original function at most once per wait.
+  throttle: function(func, wait) {
+    const cache = {};
+    cache.wait = wait;
+    cache.first = true;
+    const throttled = function() {
+      if (cache.first) {
+        cache.first = false;
+        func.apply(func, arguments)
+      }
+      if (!cache.start) cache.start = new Date().getTime();
+      cache.end = new Date();
+      if (cache.end - cache.start >= cache.wait) {
+        cache.start = new Date().getTime();
+        func.apply(func, arguments);
+      }
+    }
+    return throttled;
+  },
+
+  // Did not understand debounce so used version found in:
+  // https://davidwalsh.name/function-debounce with a few
+  // modification to make it more straightforward.
+  // Similar to throttle except that call won't run unless
+  // Wait time has passed after last call.
+  debounce: function(func, wait, immediate) {
+    var timeout;
+    const debounced = function() {
+      const args = arguments;
+      const cb = function() {
+        timeout = null;
+        if (!immediate) func.apply(func, args);
+      }
+      if (immediate && !timeout) func.apply(func, args);
+      clearTimeout(timeout);
+      timeout = setTimeout(cb, wait);
+    }
+    return debounced;
+  },
+
+  // Version of function can only run once.
+  once: function(func) {
+    var ran = false;
+    const firstOnly = function() {
+      if (!ran) {
+        ran = true;
+        return func.apply(func, arguments);
+      } else {
+        return;
+      }
+    }
+    return firstOnly;
+  },
+
+  // Will only run function after n times.
+  after: function(count, func) {
+    var calls = count;
+    const runAfter = function() {
+      if (calls === 1) {
+        return func.apply(func, arguments);
+      } else {
+        calls--;
+        return;
+      }
+    }
+    return runAfter;
+  },
+
+  // Opposite of the after function will
+  // only run n times.
+  before: function(count, func) {
+    var calls = 1;
+    const runBefore = function() {
+      if (calls < count) {
+        calls++;
+        return func.apply(func, arguments);
+      } else {
+        calls++;
+        return;
+      }
+    }
+    return runBefore;
+  },
+
+  // Wraps function in another function,
+  // and passes it as the first argument.
+  wrap: function(func, wrapper) {
+    // return wrapper.bind.apply(wrapper, [null].concat(func));
+    // Alternate way
+    return _.partial(wrapper, func)
+  },
+
+  // Returns negated version of predicate function
+  // simple implementation.
+  negate: function(predicate) {
+    return function() {
+      return !predicate.apply(predicate, arguments);
+    }
+  },
+
+  compose: function(...func) {
+    const composed = function() {
+      var i = func.length - 1;
+      var mega = func[i].apply(func[i], arguments);
+      for (i--; i >= 0; i--) {
+        mega = func[i].call(func[i], mega);
+      }
+      return mega;
+    }
+    return composed;
+  }
   /**Objects**/
 
   /**Utility**/
