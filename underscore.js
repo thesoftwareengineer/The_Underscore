@@ -6,85 +6,141 @@
 // Helper function that generates a callback for
 // elements in a collection. Should not be used
 // outside of here.
-const genCb = function(iteratee) {
-  if (iteratee instanceof Function) {
-    return iteratee;
-  } else if (iteratee === "length") {
-    return function(obj) {
-      return obj.length;
+
+(function() {
+
+  //Added from orginal for compatibility with test suite
+  // Baseline setup
+  // --------------
+
+  // Establish the root object, `window` (`self`) in the browser, `global`
+  // on the server, or `this` in some virtual machines. We use `self`
+  // instead of `window` for `WebWorker` support.
+  var root = typeof self == 'object' && self.self === self && self ||
+    typeof global == 'object' && global.global === global && global ||
+    this || {};
+
+  // Save the previous value of the `_` variable.
+  var previousUnderscore = root._;
+
+  // Save bytes in the minified (but not gzipped) version:
+  var ArrayProto = Array.prototype,
+    ObjProto = Object.prototype;
+  var SymbolProto = typeof Symbol !== 'undefined' ? Symbol.prototype : null;
+
+  // Create quick reference variables for speed access to core prototypes.
+  var push = ArrayProto.push,
+    slice = ArrayProto.slice,
+    toString = ObjProto.toString,
+    hasOwnProperty = ObjProto.hasOwnProperty;
+
+  // All **ECMAScript 5** native function implementations that we hope to use
+  // are declared here.
+  var nativeIsArray = Array.isArray,
+    nativeKeys = Object.keys,
+    nativeCreate = Object.create;
+
+  // Naked function reference for surrogate-prototype-swapping.
+  var Ctor = function() {};
+
+  // Create a safe reference to the Underscore object for use below.
+  var _ = function(obj) {
+    if (obj instanceof _) return obj;
+    if (!(this instanceof _)) return new _(obj);
+    this._wrapped = obj;
+  };
+
+  // Export the Underscore object for **Node.js**, with
+  // backwards-compatibility for their old module API. If we're in
+  // the browser, add `_` as a global object.
+  // (`nodeType` is checked to ensure that `module`
+  // and `exports` are not HTML elements.)
+  if (typeof exports != 'undefined' && !exports.nodeType) {
+    if (typeof module != 'undefined' && !module.nodeType && module.exports) {
+      exports = module.exports = _;
     }
+    exports._ = _;
   } else {
-    return function(obj) {
-      if (Object.keys(obj).length !== 0) {
-        return obj[iteratee];
-      } else {
-        return iteratee;
+    root._ = _;
+  }
+
+  var genCb = function(iteratee) {
+    if (iteratee instanceof Function) {
+      return iteratee;
+    } else if (iteratee === "length") {
+      return function(obj) {
+        return obj.length;
+      }
+    } else {
+      return function(obj) {
+        if (Object.keys(obj).length !== 0) {
+          return obj[iteratee];
+        } else {
+          return iteratee;
+        }
       }
     }
   }
-}
 
-// Helper function that creates predicate returning only
-// true or false.
-const genPredicate = function(predicate) {
-  if (predicate instanceof Function) {
-    return predicate;
-  } else {
-    return function(obj) {
-      if (Object.keys(obj).length !== 0) {
-        const idx = Object.keys(predicate)[0];
-        return obj[idx] === predicate[idx];
-      } else {
-        return obj === predicate;
+  // Helper function that creates predicate returning only
+  // true or false.
+  var genPredicate = function(predicate) {
+    if (predicate instanceof Function) {
+      return predicate;
+    } else {
+      return function(obj) {
+        if (Object.keys(obj).length !== 0) {
+          const idx = Object.keys(predicate)[0];
+          return obj[idx] === predicate[idx];
+        } else {
+          return obj === predicate;
+        }
       }
     }
   }
-}
 
-// Generic binary search with callback and toInsert option
-const binarySearch = function(array, value, cb, toInsert) {
-  if (array.length === 0) {
-    return 0;
-  }
-  if (!cb) {
-    cb = function(n) {
-      return n;
+  // Generic binary search with callback and toInsert option
+  var binarySearch = function(array, value, cb, toInsert) {
+    if (array.length === 0) {
+      return 0;
     }
-  }
-  var min = 0;
-  var max = array.length - 1;
-  var curr;
-  var currIdx;
-  while (min <= max) {
-    currIdx = (max + min) / 2 | 0;
-    curr = array[currIdx];
+    if (!cb) {
+      cb = function(n) {
+        return n;
+      }
+    }
+    var min = 0;
+    var max = array.length - 1;
+    var curr;
+    var currIdx;
+    while (min <= max) {
+      currIdx = (max + min) / 2 | 0;
+      curr = array[currIdx];
 
-    if (cb(curr) < cb(value)) {
-      min = currIdx + 1;
-    } else if (cb(curr) > cb(value)) {
-      max = currIdx - 1
+      if (cb(curr) < cb(value)) {
+        min = currIdx + 1;
+      } else if (cb(curr) > cb(value)) {
+        max = currIdx - 1
+      } else {
+        return currIdx;
+      }
+    }
+    if (!toInsert) {
+      return -1;
     } else {
       return currIdx;
     }
   }
-  if (!toInsert) {
-    return -1;
-  } else {
-    return currIdx;
+
+  var randInt = function(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min;
   }
-}
-
-const randInt = function(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min;
-}
-
-const _ = module.exports = {
 
   /**Collections**/
-  
-    each: function(list, iteratee) {
+
+  _.each = function(list, iteratee) {
     if (list instanceof Array) {
       for (var i = 0; i < list.length; i++) {
         iteratee(list[i]);
@@ -96,10 +152,11 @@ const _ = module.exports = {
       }
     }
     return list;
-  
+  };
+
   // "Plucks" all values that match key in each
   // element and returns them as an array.
-  pluck: function(list, propertyName) {
+  _.pluck = function(list, propertyName) {
     if (!list) {
       return [];
     }
@@ -108,12 +165,12 @@ const _ = module.exports = {
       plucked.push(list[i][propertyName]);
     }
     return plucked;
-  },
+  };
 
   // Returns max on a list and uses iteratee if given.
   // If empty return -Infinity if value is non-numeric,
   // it will ignore.
-  max: function(list, iteratee) {
+  _.max = function(list, iteratee) {
     if (!list || !(list instanceof Array) || list.length === 0) {
       return -Infinity;
     }
@@ -131,50 +188,50 @@ const _ = module.exports = {
       }
     }
     return max;
-  },
+  };
 
   // Returns min on a list and uses iteratee if given.
   // If empty return Infinity if value is non-numeric,
   // it will ignore.
-  min: function(list, iteratee) {
-    if (!list || !(list instanceof Array) || list.length === 0) {
-      return Infinity;
-    }
-    if (iteratee != null) iteratee = genCb(iteratee);
-    var min = list[0];
-    for (var i = 0; i < list.length; i++) {
-      const value = list[i];
-      const compute = iteratee ? iteratee(value) : value;
-      if (isNaN(compute)) {
+  _.min = function(list, iteratee) {
+      if (!list || !(list instanceof Array) || list.length === 0) {
         return Infinity;
       }
-      const currmin = iteratee ? iteratee(min) : min;
-      if (currmin > compute) {
-        min = value;
+      if (iteratee != null) iteratee = genCb(iteratee);
+      var min = list[0];
+      for (var i = 0; i < list.length; i++) {
+        const value = list[i];
+        const compute = iteratee ? iteratee(value) : value;
+        if (isNaN(compute)) {
+          return Infinity;
+        }
+        const currmin = iteratee ? iteratee(min) : min;
+        if (currmin > compute) {
+          min = value;
+        }
       }
-    }
-    return min;
-  },
+      return min;
+    },
 
-  // Returns a sorted copy of list in ascending order
-  // iteratee criteria.
-  sortBy: function(list, iteratee) {
-    if (!list) return [];
-    iteratee = genCb(iteratee);
-    const indices = this.range(list.length);
-    var sorted = indices.sort(function(a, b) {
-      const aVal = iteratee(list[a]);
-      const bVal = iteratee(list[b]);
-      return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
-    })
-    for (var i = 0; i < list.length; i++) {
-      sorted[i] = list[sorted[i]];
-    }
-    return sorted;
-  },
+    // Returns a sorted copy of list in ascending order
+    // iteratee criteria.
+    _.sortBy = function(list, iteratee) {
+      if (!list) return [];
+      iteratee = genCb(iteratee);
+      const indices = this.range(list.length);
+      var sorted = indices.sort(function(a, b) {
+        const aVal = iteratee(list[a]);
+        const bVal = iteratee(list[b]);
+        return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
+      })
+      for (var i = 0; i < list.length; i++) {
+        sorted[i] = list[sorted[i]];
+      }
+      return sorted;
+    };
 
   //Groups sets by result from iteratee
-  groupBy: function(list, iteratee) {
+  _.groupBy = function(list, iteratee) {
     if (!list || Object.keys(list).length === 0) return {};
     iteratee = genCb(iteratee);
     const groups = {};
@@ -194,10 +251,10 @@ const _ = module.exports = {
       }
     }
     return groups;
-  },
+  };
 
   // Return object with key for each object
-  indexBy: function(list, iteratee) {
+  _.indexBy = function(list, iteratee) {
     if (!list || Object.keys(list).length === 0) return {};
     iteratee = genCb(iteratee);
     const indexed = {};
@@ -208,11 +265,11 @@ const _ = module.exports = {
       indexed[key] = list[i];
     }
     return indexed;
-  },
+  };
 
   // Return count of number of elements that belong to a group
   // uses iteratee to choose group to which they belong.
-  countBy: function(list, iteratee) {
+  _.countBy = function(list, iteratee) {
     if (!list || Object.keys(list).length === 0) return {};
     iteratee = genCb(iteratee);
     const counts = {};
@@ -225,25 +282,25 @@ const _ = module.exports = {
       }
     }
     return counts;
-  },
+  };
 
   // Returns shuffled copy of list.
-  shuffle: function(list) {
+  _.shuffle = function(list) {
     if (!list || Object.keys(list).length === 0) return [];
     return list.sort(function(a, b) {
       return randInt(-1, 2);
     });
-  },
+  };
 
   // Return random sample of a list.
-  sample: function(list, n) {
+  _.sample = function(list, n) {
     if (!list || Object.keys(list).length === 0) return void 0;
     if (!n) n = 1;
     return n == 1 ? this.shuffle(list)[0] : this.shuffle(list).slice(0, n);
-  },
+  };
 
   // Creates list from iterable types.
-  toArray: function(list) {
+  _.toArray = function(list) {
     if (!list || Object.keys(list).length === 0) return [];
     // Added keys to take into account for dictionaries
     keys = Object.keys(list);
@@ -252,15 +309,15 @@ const _ = module.exports = {
       lst.push(list[keys[i]]);
     }
     return lst;
-  },
+  };
 
   // Returns size of a list
-  size: function(list) {
+  _.size = function(list) {
     if (!list || Object.keys(list).length === 0) return 0;
     return Object.keys(list).length;
-  },
+  };
 
-  partition: function(array, predicate) {
+  _.partition = function(array, predicate) {
     if (!array || Object.keys(array).length === 0) return [
       [],
       []
@@ -276,13 +333,13 @@ const _ = module.exports = {
       }
     }
     return [arr1, arr2];
-  },
+  };
 
   /**Arrays**/
 
   // Return first n elements in array by default n = 1
   // Also check for non array types and returns undefined for those
-  first: function(array, n) {
+  _.first = function(array, n) {
     if (!n) {
       n = 1;
     }
@@ -298,12 +355,12 @@ const _ = module.exports = {
       }
       return void 0;
     }
-  },
+  };
 
   // Similar to first expcept that it excludes the last n
   // elements. By default n = 1. Also preforms check for
   // non array types.
-  initial: function(array, n) {
+  _.initial = function(array, n) {
     if (!n) {
       n = 1;
     }
@@ -316,11 +373,11 @@ const _ = module.exports = {
       }
     }
     return [];
-  },
+  };
 
   // Preforms the reverse of the first function by
   // including the last n elements.
-  last: function(array, n) {
+  _.last = function(array, n) {
     if (!n) {
       n = 1;
     }
@@ -336,11 +393,11 @@ const _ = module.exports = {
       }
       return void 0;
     }
-  },
+  };
 
   // Includes all elements of array starting from index
   // i.e. index = 2 returns slice from 2 to last element
-  rest: function(array, index) {
+  _.rest = function(array, index) {
     if (!index) {
       index = 1;
     }
@@ -348,10 +405,10 @@ const _ = module.exports = {
       return array.slice(index, array.length);
     }
     return [];
-  },
+  };
 
   // Removes all falsy values from the array.
-  compact: function(array) {
+  _.compact = function(array) {
     if (array instanceof Array) {
       return array.filter(function(n) {
         if (n) {
@@ -361,12 +418,12 @@ const _ = module.exports = {
       });
     }
     return [];
-  },
+  };
 
   // This function removes all the nesting in array.
   // If the optional shallow argument is true, then
   // then only the first layer of nesting will be removed
-  flatten: function(array, shallow) {
+  _.flatten = function(array, shallow) {
     var newArr = [];
     if (array instanceof Array) {
       if (shallow) {
@@ -384,11 +441,11 @@ const _ = module.exports = {
       }
     }
     return newArr;
-  },
+  };
 
   // Takes in two arrays and filters out values based
   // on the second array.
-  without: function(array, values) {
+  _.without = function(array, values) {
     var newArr = array;
     if (array instanceof Array) {
       for (var i = 1; i < arguments.length; i++) {
@@ -400,13 +457,13 @@ const _ = module.exports = {
       return newArr;
     }
     return [];
-  },
+  };
 
   // Takes in several arrays and creates a new array
   // that creates a new array that contains elements
   // found in any of the arrays. However, array only
   // contains the same element once.
-  union: function(arrays) {
+  _.union = function(arrays) {
     var arr = [];
     for (var i = 0; i < arguments.length; i++) {
       if (arguments[i] instanceof Array) {
@@ -420,12 +477,12 @@ const _ = module.exports = {
       }
     }
     return newArr;
-  },
+  };
 
   // Takes in several arrays creates a new array
   // that contains all the values that are the
   // same in all arrays.
-  intersection: function(arrays) {
+  _.intersection = function(arrays) {
     if (!(arrays instanceof Array)) {
       return [];
     }
@@ -441,12 +498,12 @@ const _ = module.exports = {
       }
     }
     return arr;
-  },
+  };
 
   // Returns array that contains only the elements
   // of the first array that are not present in
   // the rest of the arrays.
-  difference: function(array, others) {
+  _.difference = function(array, others) {
     if (!(arguments[0] instanceof Array)) {
       return [];
     }
@@ -460,14 +517,14 @@ const _ = module.exports = {
       }
     }
     return arr;
-  },
+  };
 
   // Gets rid of duplicates in array and returns
   // it. When is isSorted is true the creation of
   // new array is easier. There is also the
   // iteratee that can be passed as the criteria
   // for what duplicates mean.
-  uniq: function(array, isSorted, iteratee) {
+  _.uniq = function(array, isSorted, iteratee) {
     if (!(array instanceof Array)) {
       return [];
     }
@@ -498,12 +555,12 @@ const _ = module.exports = {
       }
     }
     return unique;
-  },
+  };
 
   // Joins arrays together with their corresponding
   // postions i.e. [[first elments], [second elements],
   // ... [last elements]]
-  zip: function(arrays) {
+  _.zip = function(arrays) {
     if (!(arrays instanceof Array)) {
       return [];
     }
@@ -524,12 +581,12 @@ const _ = module.exports = {
       zipped.push(elm);
     }
     return zipped;
-  },
+  };
 
   // Opposite of zip contains new arrays
   // first which has first element of all
   // other arrays and so on...
-  unzip: function(array) {
+  _.unzip = function(array) {
     if (!(array instanceof Array)) {
       return [];
     }
@@ -549,13 +606,13 @@ const _ = module.exports = {
       unzipped.push(elm);
     }
     return unzipped;
-  },
+  };
 
   // Converts array into an object of key value
   // pairs. Takes single list of lists with
   // [key, values], or two list one containing
   // either keys or values.
-  object: function(list, values) {
+  _.object = function(list, values) {
     if (!(list instanceof Array)) {
       return {};
     }
@@ -568,11 +625,11 @@ const _ = module.exports = {
       }
     }
     return obj;
-  },
+  };
 
   // Returns indexOf the value and returns -1
   // if values does not exist.
-  indexOf: function(array, value, isSorted) {
+  _.indexOf = function(array, value, isSorted) {
     if (!(array instanceof Array)) {
       return -1;
     }
@@ -581,10 +638,10 @@ const _ = module.exports = {
     } else {
       return array.indexOf(value);
     }
-  },
+  };
 
   // Last occurence of a value in array
-  lastIndexOf: function(array, value, fromIndex) {
+  _.lastIndexOf = function(array, value, fromIndex) {
     if (!(array instanceof Array)) {
       return -1;
     }
@@ -593,20 +650,20 @@ const _ = module.exports = {
       if (array[i] == value) return i;
     }
     return -1;
-  },
+  };
 
   // Uses binary search to return index at which value should
   // be insterted at if order is to be sorted
-  sortedIndex: function(list, value, iteratee) {
+  _.sortedIndex = function(list, value, iteratee) {
     if (!(list instanceof Array)) {
       return 0;
     }
     if (iteratee != null) iteratee = genCb(iteratee);
     return binarySearch(list, value, iteratee, true);
-  },
+  };
 
   // Similar to indexOf, but uses predicate as search criteria
-  findIndex: function(array, predicate) {
+  _.findIndex = function(array, predicate) {
     if (!(array instanceof Array)) {
       return -1;
     }
@@ -617,10 +674,10 @@ const _ = module.exports = {
       }
     }
     return -1;
-  },
+  };
 
   // Like findIndex but searches in reverse
-  findLastIndex: function(array, predicate) {
+  _.findLastIndex = function(array, predicate) {
     if (!(array instanceof Array) || array.length === 0) {
       return -1;
     }
@@ -631,11 +688,11 @@ const _ = module.exports = {
       }
     }
     return -1;
-  },
+  };
 
   // Creates array containing number from [start, end)
   // Incrementing by step.
-  range: function(start, stop, step) {
+  _.range = function(start, stop, step) {
     if (arguments.length === 1) {
       stop = start;
       start = 0;
@@ -654,13 +711,13 @@ const _ = module.exports = {
       }
     }
     return numbers;
-  },
+  };
 
   /**Functions**/
 
   // Binds function to an object and can pass arguments
   // to pre-fill some or all arguments.
-  bind: function(func, object, ...args) {
+  _.bind = function(func, object, ...args) {
     if (!(func instanceof Function)) throw new TypeError("Bind must be called on a function", "underscore.js", 650);
     object["getFunc"] = func;
     func = object.getFunc;
@@ -671,19 +728,19 @@ const _ = module.exports = {
     } else {
       return func.bind(object);
     }
-  },
+  };
 
   // Binds several methods to an object run in conext invoked.
-  bindAll: function(object, ...methods) {
+  _.bindAll = function(object, ...methods) {
     if (!object || methods.length === 0) throw new Error("bindAll must be passed function names");
     for (var i = 0; i < methods.length; i++) {
       object[methods[i]] = object[methods[i]].bind(object);
     }
     return object;
-  },
+  };
 
   // Partially fill in arguments in a function
-  partial: function(func, ...args) {
+  _.partial = function(func, ...args) {
     var args = Array.prototype.slice.call(args);
     while (args.indexOf(_) !== -1) args.splice(args.indexOf(_), 1, null);
     const length = func.length;
@@ -705,12 +762,12 @@ const _ = module.exports = {
       //console.log(args);
       return func.apply(func, args);
     }
-  },
+  };
 
   // Function that takes in a function and stores in results
   // in a cache so that subsequent calls can be looked up
   // instead of invoking function again.
-  memoize: function(func, hashFunction) {
+  _.memoize = function(func, hashFunction) {
     const cache = {};
     const memoized = function() {
       const argument = hashFunction ? hashFunction(arguments) : Array.prototype.slice.call(arguments);
@@ -722,7 +779,7 @@ const _ = module.exports = {
       return result
     }
     return memoized;
-  },
+  };
 
   // Simple delay function that waits for execution of function
   // the same number of seconds.
@@ -734,48 +791,48 @@ const _ = module.exports = {
 
   // Second version of delay trying to use setTimeout this
   // time, inspired by what I learned from
-  delay: function(func, wait, ...args) {
-    const delayed = function() {
-      return func.apply(func, args);
-    }
-    setTimeout(delayed, wait);
-  },
-
-  // Defers invoking function until call stack has cleared.
-  defer: function(func, ...args) {
-    const delayed = function() {
-      return func.apply(func, args);
-    }
-    setTimeout(delayed, 0);
-  },
-
-  // This function creates throttled verstion of Functions
-  // calls original function at most once per wait.
-  throttle: function(func, wait) {
-    const cache = {};
-    cache.wait = wait;
-    cache.first = true;
-    const throttled = function() {
-      if (cache.first) {
-        cache.first = false;
-        func.apply(func, arguments)
+  _.delay = function(func, wait, ...args) {
+      const delayed = function() {
+        return func.apply(func, args);
       }
-      if (!cache.start) cache.start = new Date().getTime();
-      cache.end = new Date();
-      if (cache.end - cache.start >= cache.wait) {
-        cache.start = new Date().getTime();
-        func.apply(func, arguments);
+      setTimeout(delayed, wait);
+    },
+
+    // Defers invoking function until call stack has cleared.
+    _.defer = function(func, ...args) {
+      const delayed = function() {
+        return func.apply(func, args);
       }
-    }
-    return throttled;
-  },
+      setTimeout(delayed, 0);
+    },
+
+    // This function creates throttled verstion of Functions
+    // calls original function at most once per wait.
+    _.throttle = function(func, wait) {
+      const cache = {};
+      cache.wait = wait;
+      cache.first = true;
+      const throttled = function() {
+        if (cache.first) {
+          cache.first = false;
+          func.apply(func, arguments)
+        }
+        if (!cache.start) cache.start = new Date().getTime();
+        cache.end = new Date();
+        if (cache.end - cache.start >= cache.wait) {
+          cache.start = new Date().getTime();
+          func.apply(func, arguments);
+        }
+      }
+      return throttled;
+    };
 
   // Did not understand debounce so used version found in:
   // https://davidwalsh.name/function-debounce with a few
   // modification to make it more straightforward.
   // Similar to throttle except that call won't run unless
   // Wait time has passed after last call.
-  debounce: function(func, wait, immediate) {
+  _.debounce = function(func, wait, immediate) {
     var timeout;
     const debounced = function() {
       const args = arguments;
@@ -788,10 +845,10 @@ const _ = module.exports = {
       timeout = setTimeout(cb, wait);
     }
     return debounced;
-  },
+  };
 
   // Version of function can only run once.
-  once: function(func) {
+  _.once = function(func) {
     var ran = false;
     const firstOnly = function() {
       if (!ran) {
@@ -802,13 +859,13 @@ const _ = module.exports = {
       }
     }
     return firstOnly;
-  },
+  };
 
   // Will only run function after n times.
-  after: function(count, func) {
+  _.after = function(count, func) {
     var calls = count;
     const runAfter = function() {
-      if (calls === 1) {
+      if (calls === 1 || calls === 0) {
         return func.apply(func, arguments);
       } else {
         calls--;
@@ -816,11 +873,11 @@ const _ = module.exports = {
       }
     }
     return runAfter;
-  },
+  };
 
   // Opposite of the after function will
   // only run n times.
-  before: function(count, func) {
+  _.before = function(count, func) {
     var calls = 1;
     const runBefore = function() {
       if (calls < count) {
@@ -832,25 +889,25 @@ const _ = module.exports = {
       }
     }
     return runBefore;
-  },
+  };
 
   // Wraps function in another function,
   // and passes it as the first argument.
-  wrap: function(func, wrapper) {
+  _.wrap = function(func, wrapper) {
     // return wrapper.bind.apply(wrapper, [null].concat(func));
     // Alternate way
     return _.partial(wrapper, func)
-  },
+  };
 
   // Returns negated version of predicate function
   // simple implementation.
-  negate: function(predicate) {
+  _.negate = function(predicate) {
     return function() {
       return !predicate.apply(predicate, arguments);
     }
-  },
+  };
 
-  compose: function(...func) {
+  _.compose = function(...func) {
     const composed = function() {
       var i = func.length - 1;
       var mega = func[i].apply(func[i], arguments);
@@ -860,11 +917,12 @@ const _ = module.exports = {
       return mega;
     }
     return composed;
-  }
+  };
   /**Objects**/
 
   /**Utility**/
 
   /**Chaining**/
 
-};
+
+}());
