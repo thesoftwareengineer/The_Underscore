@@ -83,7 +83,20 @@ const randInt = function(min, max) {
 const _ = module.exports = {
 
   /**Collections**/
-
+  
+    each: function(list, iteratee) {
+    if (list instanceof Array) {
+      for (var i = 0; i < list.length; i++) {
+        iteratee(list[i]);
+      }
+    } else {
+      const keys = Object.keys(list);
+      for (var i = 0; i < keys.length; i++) {
+        iteratee(list[keys[i]]);
+      }
+    }
+    return list;
+  
   // "Plucks" all values that match key in each
   // element and returns them as an array.
   pluck: function(list, propertyName) {

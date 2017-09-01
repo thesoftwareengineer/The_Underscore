@@ -1,4 +1,5 @@
 _ = require("./underscore");
+//
 
 //**Collections test cases**//
 
@@ -267,6 +268,22 @@ _ = require("./underscore");
 
 // Test case for _.first(array, [n]);
 // console.log("\nTest case for _.first(array, [n])");
+
+//Test case for each(list, iteratee);
+_.each([1, 2, 3, 4, 5], function(n) {
+  console.log(n * 3);
+});
+_.each({
+  a: 1,
+  b: 2,
+  c: 3,
+  d: 4,
+  e: 5
+}, function(n) {
+  console.log(n * 3);
+});
+// // Test case for first(array, [n]);
+// console.log("\nTest case for first(array, [n])");
 // console.log(_.first([10, 1, 3, 5]));
 // console.log(_.first([10, 1, 3, 5], 2));
 // console.log(_.first([10, 1, 3, 5], 42));
@@ -275,6 +292,7 @@ _ = require("./underscore");
 // console.log(_.first([]));
 // console.log(_.first(0));
 // console.log(_.first({}));
+
 
 // Test case for _.initial(array, [n]);
 // console.log("\nTest case for _.intial(array, [n])");
@@ -287,6 +305,7 @@ _ = require("./underscore");
 // console.log(_.initial(0));
 // console.log(_.initial({}));
 
+
 // Test case for _.last(array, [n]);
 // console.log("\nTest case for _.last(array, [n])");
 // console.log(_.last([10, 1, 3, 5]));
@@ -297,6 +316,7 @@ _ = require("./underscore");
 // console.log(_.last([]));
 // console.log(_.last(0));
 // console.log(_.last({}));
+
 
 // Test case for _.rest(array, [n]);
 // console.log("\nTest case for _.rest(array, [n])");
@@ -309,6 +329,7 @@ _ = require("./underscore");
 // console.log(_.rest(0));
 // console.log(_.rest({}));
 
+
 // Test case for _.compact(array);
 // console.log("\nTest case for _.compact(array)");
 // console.log(_.compact([10, 1, 3, 5, NaN, "0", false]));
@@ -319,7 +340,6 @@ _ = require("./underscore");
 // console.log(_.compact([]));
 // console.log(_.compact(0));
 // console.log(_.compact({}));
-
 // Test case for _.flatten(array, [shallow]);
 // console.log("\nTest case for _.flatten(array, [shallow])");
 // console.log(_.flatten([10, 1, 3, 5, [12, 2, [23]]], true));
@@ -333,6 +353,7 @@ _ = require("./underscore");
 // console.log(_.flatten(0));
 // console.log(_.flatten({}));
 
+
 // Test case for _.without(array, *values)
 // console.log("\nTest case for _.without(array, *values)");
 // console.log(_.without([1, 2, 1, 0, 3, 1, 4], 0, 1));
@@ -342,6 +363,7 @@ _ = require("./underscore");
 // console.log(_.without([]));
 // console.log(_.without(0));
 // console.log(_.without({}));
+
 
 // Test case for _.union(array, *values)
 // console.log("\nTest case for _.union(array, *values)");
@@ -354,6 +376,7 @@ _ = require("./underscore");
 // console.log(_.union(0));
 // console.log(_.union({}));
 
+
 // Test case for _.intersection(*arrays)
 // console.log("\nTest case for _.intersection(*arrays)");
 // console.log(_.intersection([1, 2, 3], [101, 2, 1, 10], [2, 1]));
@@ -365,6 +388,7 @@ _ = require("./underscore");
 // console.log(_.intersection(0));
 // console.log(_.intersection({}));
 
+
 // Test case for _.difference(*arrays)
 // console.log("\nTest case for _.difference(*arrays)");
 // console.log(_.difference([1, 2, 3], [101, 2, 1, 10], [2, 1]));
@@ -375,6 +399,7 @@ _ = require("./underscore");
 // console.log(_.difference([]));
 // console.log(_.difference(0));
 // console.log(_.difference({}));
+
 
 // Test case for _.uniq(array, [isSorted], [iteratee])
 // console.log("\nTest case for _.uniq(array, [isSorted], [iteratee])");
@@ -411,6 +436,7 @@ _ = require("./underscore");
 // console.log(_.uniq(0));
 // console.log(_.uniq({}));
 
+
 // Test case for _.zip(*arrays)
 // console.log("\nTest case for _.zip(*arrays)");
 // console.log(_.zip(["moe", "larry", "curly"], [30, 40, 50], [true, false, false]));
@@ -421,6 +447,7 @@ _ = require("./underscore");
 // console.log(_.zip([]));
 // console.log(_.zip(0));
 // console.log(_.zip({}));
+
 
 // Test case for _.unzip(array)
 // console.log("\nTest case for _.unzip(array)");
@@ -445,6 +472,7 @@ _ = require("./underscore");
 // console.log(_.unzip(0));
 // console.log(_.unzip({}));
 
+
 // Test case of _.object(list, [values])
 // console.log("\nTest case for _.object(list, [values])");
 // console.log(_.object(false));
@@ -468,6 +496,7 @@ _ = require("./underscore");
 // console.log(_.object(0));
 // console.log(_.object({}));
 
+
 // Test case of _.indexOf(array, values, [isSorted])
 // console.log("\nTest case of _.indexOf(array, values, [isSorted])");
 // console.log(_.indexOf([1, 2, 3], 2));
@@ -478,6 +507,7 @@ _ = require("./underscore");
 // console.log(_.indexOf([]));
 // console.log(_.indexOf(0));
 // console.log(_.indexOf({}));
+
 
 // Test case of _.lastIndexOf(array, value, [fromIndex])
 // console.log("\nTest case of _.lastIndexOf(array, value, [fromIndex])");
@@ -526,6 +556,7 @@ _ = require("./underscore");
 // console.log(_.findIndex(0));
 // console.log(_.findIndex({}));
 
+
 // Test case for .findLastIndex(array, predicate)
 // console.log("\nTest case for .findLastIndex(array, predicate)");
 // var users = [{
@@ -557,6 +588,7 @@ _ = require("./underscore");
 // console.log(_.findLastIndex([]));
 // console.log(_.findLastIndex(0));
 // console.log(_.findLastIndex({}));
+
 
 // Test case for _.range([start], stop, [step])
 // console.log("\nTest case for _.range([start], stop, [step])");
