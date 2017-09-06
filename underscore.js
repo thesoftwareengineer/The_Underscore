@@ -718,16 +718,13 @@
   // Binds function to an object and can pass arguments
   // to pre-fill some or all arguments.
   _.bind = function(func, object, ...args) {
-    if (!(func instanceof Function)) throw new TypeError("Bind must be called on a function", "underscore.js", 650);
-    object["getFunc"] = func;
-    func = object.getFunc;
-    if (args.length !== 0) {
-      var args = Array.prototype.slice.call(args);
-      return func.bind.apply(func, [object].concat(args));
-      //return func.apply(this, arg1.slice(2, arg1.length));
-    } else {
-      return func.bind(object);
+    if (!(func instanceof Function)) throw new TypeError("Bind must be called on a function", "underscore.js");
+    if (object instanceof Object) {
+      object["getFunc"] = func;
+      func = object.getFunc;
     }
+    var args = Array.prototype.slice.call(args);
+    return func.bind.apply(func, [object].concat(args));
   };
 
   // Binds several methods to an object run in conext invoked.
@@ -740,27 +737,17 @@
   };
 
   // Partially fill in arguments in a function
-  _.partial = function(func, ...args) {
-    var args = Array.prototype.slice.call(args);
-    while (args.indexOf(_) !== -1) args.splice(args.indexOf(_), 1, null);
-    const length = func.length;
-    // Make sure args array is the same size as the number
-    // of agruments required.
-    if (args.length < length) {
-      for (var i = 0; i <= length - args.length; i++) {
-        args.push(null);
-      }
-    }
+  _.partial = function(func) {
+    var args = Array.prototype.slice.call(arguments, 1);
     return function() {
-      var inArgs = Array.prototype.slice.call(arguments);
+      const length = args.length;
+      var pos = 0;
+      var outArgs = Array(length);
       for (var i = 0; i < length; i++) {
-        if (i >= length || args[i] === null) {
-          args[i] = inArgs.shift();
-        }
+        outArgs[i] = args[i] === _ ? arguments[pos++] : args[i];
       }
-      args = Array.apply(null, args);
-      //console.log(args);
-      return func.apply(func, args);
+      while (pos < arguments.length) outArgs.push(arguments[pos++]);
+      return func.apply(this, outArgs);
     }
   };
 
@@ -769,16 +756,14 @@
   // instead of invoking function again.
   _.memoize = function(func, hashFunction) {
     const cache = {};
-    const memoized = function() {
+    return function() {
       const argument = hashFunction ? hashFunction(arguments) : Array.prototype.slice.call(arguments);
       var result = cache[argument];
       if (result === undefined) {
         result = func.apply(func, arguments);
         cache[argument] = result;
       }
-      return result
-    }
-    return memoized;
+    }.bind(this);
   };
 
   // Simple delay function that waits for execution of function
@@ -925,4 +910,5 @@
   /**Chaining**/
 
 
-}());
+
+}.call(this));
