@@ -846,7 +846,6 @@
       const context = this;
       const cb = function() {
         timeout = null;
-        // console.log(!immediate);
         if (!immediate) result = func.apply(context, args);
       }
       const call = immediate && !timeout;
