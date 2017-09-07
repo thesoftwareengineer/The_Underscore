@@ -755,15 +755,18 @@
   // in a cache so that subsequent calls can be looked up
   // instead of invoking function again.
   _.memoize = function(func, hashFunction) {
-    const cache = {};
-    return function() {
-      const argument = hashFunction ? hashFunction(arguments) : Array.prototype.slice.call(arguments);
+    const memoized = function() {
+      const cache = memoized.cache;
+      const argument = hashFunction ? hashFunction.apply(this, arguments) : Array.prototype.slice.call(arguments);
       var result = cache[argument];
-      if (result === undefined) {
+      if (!cache.hasOwnProperty(argument)) {
         result = func.apply(func, arguments);
         cache[argument] = result;
       }
+      return result;
     }.bind(this);
+    memoized.cache = {};
+    return memoized;
   };
 
   // Simple delay function that waits for execution of function
