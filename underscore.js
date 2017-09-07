@@ -780,7 +780,7 @@
       const delayed = function() {
         return func.apply(func, args);
       }
-      setTimeout(delayed, wait);
+      return setTimeout(delayed, wait);
     },
 
     // Defers invoking function until call stack has cleared.
@@ -793,22 +793,44 @@
 
     // This function creates throttled verstion of Functions
     // calls original function at most once per wait.
-    _.throttle = function(func, wait) {
-      const cache = {};
-      cache.wait = wait;
-      cache.first = true;
+    _.throttle = function(func, wait, options) {
+      var result, context, args, timeout;
+      var prev = 0;
+      if (!options) options = {};
+
+      const trailing = function() {
+        prev = options.leading === false ? 0 : new Date().getTime();
+        timeout = null;
+        result = func.apply(context, args);
+        if (!timeout) context = args = null;
+      };
+
       const throttled = function() {
-        if (cache.first) {
-          cache.first = false;
-          func.apply(func, arguments)
+        const now = new Date().getTime();
+        if (!prev && options.leading === false) prev = now;
+        const remaining = wait - (now - prev);
+        context = this;
+        args = arguments;
+        if (remaining <= 0 || remaining > wait) {
+          if (timeout) {
+            clearTimeout(timeout);
+            timeout = null;
+          }
+          prev = now;
+          result = func.apply(context, args);
+          if (!timeout) context = args = null;
+        } else if (!timeout && options.trailing !== false) {
+          timeout = setTimeout(trailing, remaining);
         }
-        if (!cache.start) cache.start = new Date().getTime();
-        cache.end = new Date();
-        if (cache.end - cache.start >= cache.wait) {
-          cache.start = new Date().getTime();
-          func.apply(func, arguments);
-        }
-      }
+        return result;
+      };
+
+      throttled.cancel = function() {
+        clearTimeout(timeout);
+        prev = 0;
+        timeout = context = args = null;
+      };
+
       return throttled;
     };
 
@@ -816,18 +838,27 @@
   // https://davidwalsh.name/function-debounce with a few
   // modification to make it more straightforward.
   // Similar to throttle except that call won't run unless
-  // Wait time has passed after last call.
+  // Wait time has passed after LAST call.
   _.debounce = function(func, wait, immediate) {
-    var timeout;
+    var timeout, result;
     const debounced = function() {
       const args = arguments;
+      const context = this;
       const cb = function() {
         timeout = null;
-        if (!immediate) func.apply(func, args);
+        // console.log(!immediate);
+        if (!immediate) result = func.apply(context, args);
       }
-      if (immediate && !timeout) func.apply(func, args);
+      const call = immediate && !timeout;
       clearTimeout(timeout);
       timeout = setTimeout(cb, wait);
+      if (call) result = func.apply(context, args);
+      return result;
+    }
+
+    debounced.cancel = function() {
+      clearTimeout(timeout);
+      timeout = null;
     }
     return debounced;
   };
