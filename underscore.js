@@ -866,12 +866,14 @@
   // Version of function can only run once.
   _.once = function(func) {
     var ran = false;
+    var result;
     const firstOnly = function() {
       if (!ran) {
         ran = true;
-        return func.apply(func, arguments);
+        result = func.apply(func, arguments);
+        return result;
       } else {
-        return;
+        return result;
       }
     }
     return firstOnly;
