@@ -1,3 +1,3 @@
 (function() {
-  QUnit.config.noglobals = true;
+  QUnit.config.noglobals = false;
 }());

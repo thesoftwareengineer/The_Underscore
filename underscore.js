@@ -21,7 +21,7 @@
     this || {};
 
   // Save the previous value of the `_` variable.
-  var previousUnderscore = root._;
+  // var previousUnderscore = root._;
 
   // Save bytes in the minified (but not gzipped) version:
   var ArrayProto = Array.prototype,
@@ -29,19 +29,19 @@
   var SymbolProto = typeof Symbol !== 'undefined' ? Symbol.prototype : null;
 
   // Create quick reference variables for speed access to core prototypes.
-  var push = ArrayProto.push,
-    slice = ArrayProto.slice,
-    toString = ObjProto.toString,
-    hasOwnProperty = ObjProto.hasOwnProperty;
+  // var push = ArrayProto.push,
+  //   slice = ArrayProto.slice,
+  //   toString = ObjProto.toString,
+  //   hasOwnProperty = ObjProto.hasOwnProperty;
 
   // All **ECMAScript 5** native function implementations that we hope to use
   // are declared here.
-  var nativeIsArray = Array.isArray,
-    nativeKeys = Object.keys,
-    nativeCreate = Object.create;
+  // var nativeIsArray = Array.isArray,
+  //   nativeKeys = Object.keys,
+  //   nativeCreate = Object.create;
 
   // Naked function reference for surrogate-prototype-swapping.
-  var Ctor = function() {};
+  // var Ctor = function() {};
 
   // Create a safe reference to the Underscore object for use below.
   var _ = function(obj) {
@@ -739,16 +739,25 @@
   // Partially fill in arguments in a function
   _.partial = function(func) {
     var args = Array.prototype.slice.call(arguments, 1);
-    return function() {
+    const part = function() {
+      if (!_.partial.placeholder) _.partial.placeholder = _;
       const length = args.length;
       var pos = 0;
       var outArgs = Array(length);
       for (var i = 0; i < length; i++) {
-        outArgs[i] = args[i] === _ ? arguments[pos++] : args[i];
+        outArgs[i] = args[i] === _.partial.placeholder ? arguments[pos++] : args[i];
       }
       while (pos < arguments.length) outArgs.push(arguments[pos++]);
-      return func.apply(this, outArgs);
+      if (!(this instanceof part)) {
+        return func.apply(this, outArgs);
+      } else {
+        const self = Object.create(func.prototype);
+        const result = func.apply(self, outArgs);
+        if ((typeof result === 'function' || typeof result === 'object' && !!result)) return result;
+        return self;
+      }
     }
+    return part;
   };
 
   // Function that takes in a function and stores in results

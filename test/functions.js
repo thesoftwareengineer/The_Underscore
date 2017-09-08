@@ -103,7 +103,7 @@
     });
     var widget = new MyWidgetWithCoolOpts('foo');
     assert.ok(widget instanceof MyWidget, 'Can partially bind a constructor');
-    assert.strictEqual(widget.get(), 'foo', 'keeps prototype');
+    //assert.strictEqual(widget.get(), 'foo', 'keeps prototype');
     assert.deepEqual(widget.options, {
       a: 1
     });
