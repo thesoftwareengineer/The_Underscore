@@ -789,62 +789,62 @@
   // Second version of delay trying to use setTimeout this
   // time, inspired by what I learned from
   _.delay = function(func, wait, ...args) {
-      const delayed = function() {
-        return func.apply(func, args);
-      }
-      return setTimeout(delayed, wait);
-    },
+    const delayed = function() {
+      return func.apply(func, args);
+    }
+    return setTimeout(delayed, wait);
+  };
 
-    // Defers invoking function until call stack has cleared.
-    _.defer = function(func, ...args) {
-      const delayed = function() {
-        return func.apply(func, args);
-      }
-      setTimeout(delayed, 0);
-    },
+  // Defers invoking function until call stack has cleared.
+  _.defer = function(func, ...args) {
+    const delayed = function() {
+      return func.apply(func, args);
+    }
+    setTimeout(delayed, 0);
+  };
 
-    // This function creates throttled verstion of Functions
-    // calls original function at most once per wait.
-    _.throttle = function(func, wait, options) {
-      var result, context, args, timeout;
-      var prev = 0;
-      if (!options) options = {};
+  // This function creates throttled verstion of Functions
+  // calls original function at most once per wait.
+  _.throttle = function(func, wait, options) {
+    var result, context, args, timeout;
+    var prev = 0;
+    if (!options) options = {};
 
-      const trailing = function() {
-        prev = options.leading === false ? 0 : new Date().getTime();
-        timeout = null;
+    const trailing = function() {
+      prev = options.leading === false ? 0 : new Date().getTime();
+      timeout = null;
+      result = func.apply(context, args);
+      if (!timeout) context = args = null;
+    };
+
+    const throttled = function() {
+      const now = new Date().getTime();
+      if (!prev && options.leading === false) prev = now;
+      const remaining = wait - (now - prev);
+      context = this;
+      args = arguments;
+      if (remaining <= 0 || remaining > wait) {
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = null;
+        }
+        prev = now;
         result = func.apply(context, args);
         if (!timeout) context = args = null;
-      };
-
-      const throttled = function() {
-        const now = new Date().getTime();
-        if (!prev && options.leading === false) prev = now;
-        const remaining = wait - (now - prev);
-        context = this;
-        args = arguments;
-        if (remaining <= 0 || remaining > wait) {
-          if (timeout) {
-            clearTimeout(timeout);
-            timeout = null;
-          }
-          prev = now;
-          result = func.apply(context, args);
-          if (!timeout) context = args = null;
-        } else if (!timeout && options.trailing !== false) {
-          timeout = setTimeout(trailing, remaining);
-        }
-        return result;
-      };
-
-      throttled.cancel = function() {
-        clearTimeout(timeout);
-        prev = 0;
-        timeout = context = args = null;
-      };
-
-      return throttled;
+      } else if (!timeout && options.trailing !== false) {
+        timeout = setTimeout(trailing, remaining);
+      }
+      return result;
     };
+
+    throttled.cancel = function() {
+      clearTimeout(timeout);
+      prev = 0;
+      timeout = context = args = null;
+    };
+
+    return throttled;
+  };
 
   // Did not understand debounce so used version found in:
   // https://davidwalsh.name/function-debounce with a few
@@ -878,7 +878,7 @@
   _.once = function(func) {
     var ran = false;
     var result;
-    const firstOnly = function() {
+    return function() {
       if (!ran) {
         ran = true;
         result = func.apply(func, arguments);
@@ -887,13 +887,12 @@
         return result;
       }
     }
-    return firstOnly;
   };
 
   // Will only run function after n times.
   _.after = function(count, func) {
     var calls = count;
-    const runAfter = function() {
+    return function() {
       if (calls === 1 || calls === 0) {
         return func.apply(func, arguments);
       } else {
@@ -901,14 +900,13 @@
         return;
       }
     }
-    return runAfter;
   };
 
   // Opposite of the after function will
   // only run n times.
   _.before = function(count, func) {
     var calls = 1;
-    const runBefore = function() {
+    return function() {
       if (calls < count) {
         calls++;
         return func.apply(func, arguments);
@@ -917,7 +915,6 @@
         return;
       }
     }
-    return runBefore;
   };
 
   // Wraps function in another function,
@@ -937,7 +934,7 @@
   };
 
   _.compose = function(...func) {
-    const composed = function() {
+    return function() {
       var i = func.length - 1;
       var mega = func[i].apply(func[i], arguments);
       for (i--; i >= 0; i--) {
@@ -945,7 +942,6 @@
       }
       return mega;
     }
-    return composed;
   };
   /**Objects**/
 
