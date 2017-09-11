@@ -232,32 +232,21 @@
     };
 
   //Groups sets by result from iteratee
-  _.groupBy = function(list, iteratee) {
-    if (!list || Object.keys(list).length === 0) return {};
-    iteratee = _.iteratee(iteratee);
+  _.groupBy = function(list, iteratee, context) {
     const groups = {};
-    var key = iteratee(list[0]);
-    groups[key] = [list[0]];
-    for (var i = 1; i < Object.keys(list).length; i++) {
-      const newKey = iteratee(list[i]);
-      if (key === newKey) {
-        groups[key].push(list[i]);
-      } else {
-        key = newKey;
-        if (groups[key] === undefined) {
-          groups[newKey] = [list[i]];
-        } else {
-          groups[newKey].push(list[i]);
-        }
-      }
-    }
+    iteratee = _.iteratee(iteratee, context);
+    _.each(list, function(value, index) {
+      const key = iteratee(value, index, list);
+      if (Object.prototype.hasOwnProperty.call(groups, key)) groups[key].push(value);
+      else groups[key] = [value];
+    });
     return groups;
   };
 
   // Return object with key for each object
-  _.indexBy = function(list, iteratee) {
+  _.indexBy = function(list, iteratee, context) {
     if (!list || Object.keys(list).length === 0) return {};
-    iteratee = _.iteratee(iteratee);
+    iteratee = _.iteratee(iteratee, context);
     const indexed = {};
     var key = iteratee(list[0]);
     indexed[key] = list[0];
@@ -270,27 +259,28 @@
 
   // Return count of number of elements that belong to a group
   // uses iteratee to choose group to which they belong.
-  _.countBy = function(list, iteratee) {
+  _.countBy = function(list, iteratee, context) {
     if (!list || Object.keys(list).length === 0) return {};
-    iteratee = _.iteratee(iteratee);
+    iteratee = _.iteratee(iteratee, context);
     const counts = {};
-    for (var i = 0; i < list.length; i++) {
-      const key = iteratee(list[i]);
-      if (counts[key] !== undefined) {
-        counts[key] += 1;
-      } else {
-        counts[key] = 1;
-      }
-    }
+    _.each(list, function(value, index) {
+      const key = iteratee(value, index, list);
+      if (Object.prototype.hasOwnProperty.call(counts, key)) counts[key]++;
+      else counts[key] = 1;
+    });
+    console.log(counts);
     return counts;
   };
 
   // Returns shuffled copy of list.
   _.shuffle = function(list) {
     if (!list || Object.keys(list).length === 0) return [];
-    return list.sort(function(a, b) {
+    list = list instanceof Array ? list : _.values(list);
+    var lst = list.slice();
+    lst = lst.sort(function(a, b) {
       return randInt(-1, 2);
     });
+    return lst;
   };
 
   // Return random sample of a list.
@@ -949,8 +939,8 @@
   // orginal as I had no idea what this functions purpose was.
   _.iteratee = function(iteratee, context) {
 
-    // if null return itself
-    if (iteratee == null) return iteratee;
+    // if null return whatever value was passed to function
+    if (iteratee == null) return _.identity;
     // check if already a function and return it with context
     if (iteratee instanceof Function) {
       var cb = iteratee;
@@ -978,7 +968,6 @@
     return function(obj) {
       if (iteratee instanceof Array) {
         for (var i = 0; i < iteratee.length; i++) {
-          console.log(iteratee[i]);
           obj = obj[iteratee[i]];
         }
         return obj;
