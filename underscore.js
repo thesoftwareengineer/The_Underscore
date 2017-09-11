@@ -64,23 +64,7 @@
     root._ = _;
   }
 
-  var genCb = function(iteratee) {
-    if (iteratee instanceof Function) {
-      return iteratee;
-    } else if (iteratee === "length") {
-      return function(obj) {
-        return obj.length;
-      }
-    } else {
-      return function(obj) {
-        if (Object.keys(obj).length !== 0) {
-          return obj[iteratee];
-        } else {
-          return iteratee;
-        }
-      }
-    }
-  }
+
 
   // Helper function that creates predicate returning only
   // true or false.
@@ -140,15 +124,18 @@
 
   /**Collections**/
 
-  _.each = function(list, iteratee) {
+  // Runs iteratee function on all the elements of an
+  // array or object. Context can be passed in as well.
+  _.each = _.forEach = function(list, iteratee, context) {
+    const cb = _.iteratee(iteratee, context);
     if (list instanceof Array) {
       for (var i = 0; i < list.length; i++) {
-        iteratee(list[i]);
+        cb(list[i], i, list);
       }
     } else {
       const keys = Object.keys(list);
       for (var i = 0; i < keys.length; i++) {
-        iteratee(list[keys[i]]);
+        cb(list[keys[i]], keys[i], list);
       }
     }
     return list;
@@ -170,11 +157,16 @@
   // Returns max on a list and uses iteratee if given.
   // If empty return -Infinity if value is non-numeric,
   // it will ignore.
-  _.max = function(list, iteratee) {
-    if (!list || !(list instanceof Array) || list.length === 0) {
+  _.max = function(list, iteratee, context) {
+    if (!list || Object.keys(list).length === 0) {
       return -Infinity;
     }
-    if (iteratee != null) iteratee = genCb(iteratee);
+    if (iteratee != null) iteratee = _.iteratee(iteratee, context);
+    list = list instanceof Array ? list : _.values(list);
+    list = list.filter(function(elm) {
+      return !isNaN(elm);
+    });
+    if (list.length === 0) return -Infinity;
     var max = list[0];
     for (var i = 0; i < list.length; i++) {
       const value = list[i];
@@ -194,10 +186,15 @@
   // If empty return Infinity if value is non-numeric,
   // it will ignore.
   _.min = function(list, iteratee) {
-      if (!list || !(list instanceof Array) || list.length === 0) {
+      if (!list || Object.keys(list).length === 0) {
         return Infinity;
       }
-      if (iteratee != null) iteratee = genCb(iteratee);
+      if (iteratee != null) iteratee = _.iteratee(iteratee);
+      list = list instanceof Array ? list : _.values(list);
+      list = list.filter(function(elm) {
+        return !isNaN(elm);
+      });
+      if (list.length === 0) return Infinity;
       var min = list[0];
       for (var i = 0; i < list.length; i++) {
         const value = list[i];
@@ -215,13 +212,17 @@
 
     // Returns a sorted copy of list in ascending order
     // iteratee criteria.
-    _.sortBy = function(list, iteratee) {
+    _.sortBy = function(list, iteratee, context) {
       if (!list) return [];
-      iteratee = genCb(iteratee);
+      // console.log(iteratee);
+      iteratee = _.iteratee(iteratee, context);
+      list = list instanceof Array ? list : _.values(list);
       const indices = this.range(list.length);
       var sorted = indices.sort(function(a, b) {
-        const aVal = iteratee(list[a]);
-        const bVal = iteratee(list[b]);
+        var aVal = iteratee(list[a]);
+        var bVal = iteratee(list[b]);
+        if (aVal === undefined) aVal = Infinity;
+        if (bVal === undefined) bVal = Infinity;
         return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
       })
       for (var i = 0; i < list.length; i++) {
@@ -233,7 +234,7 @@
   //Groups sets by result from iteratee
   _.groupBy = function(list, iteratee) {
     if (!list || Object.keys(list).length === 0) return {};
-    iteratee = genCb(iteratee);
+    iteratee = _.iteratee(iteratee);
     const groups = {};
     var key = iteratee(list[0]);
     groups[key] = [list[0]];
@@ -256,7 +257,7 @@
   // Return object with key for each object
   _.indexBy = function(list, iteratee) {
     if (!list || Object.keys(list).length === 0) return {};
-    iteratee = genCb(iteratee);
+    iteratee = _.iteratee(iteratee);
     const indexed = {};
     var key = iteratee(list[0]);
     indexed[key] = list[0];
@@ -271,7 +272,7 @@
   // uses iteratee to choose group to which they belong.
   _.countBy = function(list, iteratee) {
     if (!list || Object.keys(list).length === 0) return {};
-    iteratee = genCb(iteratee);
+    iteratee = _.iteratee(iteratee);
     const counts = {};
     for (var i = 0; i < list.length; i++) {
       const key = iteratee(list[i]);
@@ -534,7 +535,7 @@
     }
     const unique = [];
     var seen = [];
-    if (iteratee != null) iteratee = genCb(iteratee);
+    if (iteratee != null) iteratee = _.iteratee(iteratee);
     for (var i = 0; i < array.length; i++) {
       const value = array[i];
       const compute = iteratee ? iteratee(value) : value;
@@ -658,7 +659,7 @@
     if (!(list instanceof Array)) {
       return 0;
     }
-    if (iteratee != null) iteratee = genCb(iteratee);
+    if (iteratee != null) iteratee = _.iteratee(iteratee);
     return binarySearch(list, value, iteratee, true);
   };
 
@@ -943,9 +944,69 @@
       return mega;
     }
   };
+
+  // Generate appropriate iteratee cb function. Note: base of
+  // orginal as I had no idea what this functions purpose was.
+  _.iteratee = function(iteratee, context) {
+
+    // if null return itself
+    if (iteratee == null) return iteratee;
+    // check if already a function and return it with context
+    if (iteratee instanceof Function) {
+      var cb = iteratee;
+      if (context) {
+        cb = function() {
+          return iteratee.apply(context, arguments);
+        };
+      }
+      return cb;
+    }
+    // check that keys match if iteratee is an object
+    if (typeof iteratee === 'function' || typeof iteratee === 'object' && !!iteratee && !(iteratee instanceof Array)) {
+      return function(obj) {
+        const keys = Object.keys(iteratee);
+        const attr = Object(obj);
+        if (attr == null) return !keys.length;
+        for (var i = 0; i < keys.length; i++) {
+          if (attr[keys[i]] !== iteratee[keys[i]] || !(keys[i] in attr)) return false;
+        }
+        return true;
+      }
+    }
+    // return property if it exists including deep property
+    // when iteratee is an array.
+    return function(obj) {
+      if (iteratee instanceof Array) {
+        for (var i = 0; i < iteratee.length; i++) {
+          console.log(iteratee[i]);
+          obj = obj[iteratee[i]];
+        }
+        return obj;
+      }
+      if (Object.keys(obj).length !== 0) {
+        return obj[iteratee];
+      } else {
+        return void 0;
+      }
+
+    }
+  };
   /**Objects**/
 
+  _.values = function(object) {
+    const keys = Object.keys(object);
+    const array = Array(keys.length);
+    for (var i = 0; i < keys.length; i++) {
+      array[i] = object[keys[i]];
+    }
+    return array;
+  };
+
   /**Utility**/
+
+  _.identity = function(value) {
+    return value;
+  }
 
   /**Chaining**/
 
