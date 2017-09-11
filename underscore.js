@@ -287,6 +287,7 @@
   _.sample = function(list, n) {
     if (!list || Object.keys(list).length === 0) return void 0;
     if (!n) n = 1;
+    if (n < 0) return [];
     return n == 1 ? this.shuffle(list)[0] : this.shuffle(list).slice(0, n);
   };
 
