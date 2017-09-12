@@ -6,9 +6,13 @@
   var testElement = typeof document === 'object' ? document.createElement('div') : void 0;
 
   QUnit.test('keys', function(assert) {
-    assert.deepEqual(_.keys({one: 1, two: 2}), ['one', 'two'], 'can extract the keys from an object');
+    assert.deepEqual(_.keys({
+      one: 1,
+      two: 2
+    }), ['one', 'two'], 'can extract the keys from an object');
     // the test above is not safe because it relies on for-in enumeration order
-    var a = []; a[1] = 0;
+    var a = [];
+    a[1] = 0;
     assert.deepEqual(_.keys(a), ['1'], 'is not fooled by sparse arrays; see issue #95');
     assert.deepEqual(_.keys(null), []);
     assert.deepEqual(_.keys(void 0), []);
@@ -31,20 +35,27 @@
       __lookupGetter__: []
     };
     var troubleKeys = ['constructor', 'valueOf', 'hasOwnProperty', 'toString', 'toLocaleString', 'propertyIsEnumerable',
-                  'isPrototypeOf', '__defineGetter__', '__defineSetter__', '__lookupSetter__', '__lookupGetter__'].sort();
+      'isPrototypeOf', '__defineGetter__', '__defineSetter__', '__lookupSetter__', '__lookupGetter__'
+    ].sort();
     assert.deepEqual(_.keys(trouble).sort(), troubleKeys, 'matches non-enumerable properties');
   });
 
   QUnit.test('allKeys', function(assert) {
-    assert.deepEqual(_.allKeys({one: 1, two: 2}), ['one', 'two'], 'can extract the allKeys from an object');
+    assert.deepEqual(_.allKeys({
+      one: 1,
+      two: 2
+    }), ['one', 'two'], 'can extract the allKeys from an object');
     // the test above is not safe because it relies on for-in enumeration order
-    var a = []; a[1] = 0;
+    var a = [];
+    a[1] = 0;
     assert.deepEqual(_.allKeys(a), ['1'], 'is not fooled by sparse arrays; see issue #95');
 
     a.a = a;
     assert.deepEqual(_.allKeys(a), ['1', 'a'], 'is not fooled by sparse arrays with additional properties');
 
-    _.each([null, void 0, 1, 'a', true, NaN, {}, [], new Number(5), new Date(0)], function(val) {
+    _.each([null, void 0, 1, 'a', true, NaN, {},
+      [], new Number(5), new Date(0)
+    ], function(val) {
       assert.deepEqual(_.allKeys(val), []);
     });
 
@@ -59,7 +70,8 @@
       isPrototypeOf: this
     };
     var troubleKeys = ['constructor', 'valueOf', 'hasOwnProperty', 'toString', 'toLocaleString', 'propertyIsEnumerable',
-                  'isPrototypeOf'].sort();
+      'isPrototypeOf'
+    ].sort();
     assert.deepEqual(_.allKeys(trouble).sort(), troubleKeys, 'matches non-enumerable properties');
 
     function A() {}
@@ -74,30 +86,62 @@
   });
 
   QUnit.test('values', function(assert) {
-    assert.deepEqual(_.values({one: 1, two: 2}), [1, 2], 'can extract the values from an object');
-    assert.deepEqual(_.values({one: 1, two: 2, length: 3}), [1, 2, 3], '... even when one of them is "length"');
+    assert.deepEqual(_.values({
+      one: 1,
+      two: 2
+    }), [1, 2], 'can extract the values from an object');
+    assert.deepEqual(_.values({
+      one: 1,
+      two: 2,
+      length: 3
+    }), [1, 2, 3], '... even when one of them is "length"');
   });
 
   QUnit.test('pairs', function(assert) {
-    assert.deepEqual(_.pairs({one: 1, two: 2}), [['one', 1], ['two', 2]], 'can convert an object into pairs');
-    assert.deepEqual(_.pairs({one: 1, two: 2, length: 3}), [['one', 1], ['two', 2], ['length', 3]], '... even when one of them is "length"');
+    assert.deepEqual(_.pairs({
+      one: 1,
+      two: 2
+    }), [
+      ['one', 1],
+      ['two', 2]
+    ], 'can convert an object into pairs');
+    assert.deepEqual(_.pairs({
+      one: 1,
+      two: 2,
+      length: 3
+    }), [
+      ['one', 1],
+      ['two', 2],
+      ['length', 3]
+    ], '... even when one of them is "length"');
   });
 
   QUnit.test('invert', function(assert) {
-    var obj = {first: 'Moe', second: 'Larry', third: 'Curly'};
+    var obj = {
+      first: 'Moe',
+      second: 'Larry',
+      third: 'Curly'
+    };
     assert.deepEqual(_.keys(_.invert(obj)), ['Moe', 'Larry', 'Curly'], 'can invert an object');
     assert.deepEqual(_.invert(_.invert(obj)), obj, 'two inverts gets you back where you started');
 
-    obj = {length: 3};
+    obj = {
+      length: 3
+    };
     assert.strictEqual(_.invert(obj)['3'], 'length', 'can invert an object with "length"');
   });
 
   QUnit.test('functions', function(assert) {
-    var obj = {a: 'dash', b: _.map, c: /yo/, d: _.reduce};
+    var obj = {
+      a: 'dash',
+      b: _.map,
+      c: /yo/,
+      d: _.reduce
+    };
     assert.deepEqual(['b', 'd'], _.functions(obj), 'can grab the function names of any passed-in object');
 
-    var Animal = function(){};
-    Animal.prototype.run = function(){};
+    var Animal = function() {};
+    Animal.prototype.run = function() {};
     assert.deepEqual(_.functions(new Animal), ['run'], 'also looks up functions on the prototype');
   });
 
@@ -107,63 +151,169 @@
 
   QUnit.test('extend', function(assert) {
     var result;
-    assert.strictEqual(_.extend({}, {a: 'b'}).a, 'b', 'can extend an object with the attributes of another');
-    assert.strictEqual(_.extend({a: 'x'}, {a: 'b'}).a, 'b', 'properties in source override destination');
-    assert.strictEqual(_.extend({x: 'x'}, {a: 'b'}).x, 'x', "properties not in source don't get overridden");
-    result = _.extend({x: 'x'}, {a: 'a'}, {b: 'b'});
-    assert.deepEqual(result, {x: 'x', a: 'a', b: 'b'}, 'can extend from multiple source objects');
-    result = _.extend({x: 'x'}, {a: 'a', x: 2}, {a: 'b'});
-    assert.deepEqual(result, {x: 2, a: 'b'}, 'extending from multiple source objects last property trumps');
-    result = _.extend({}, {a: void 0, b: null});
+    assert.strictEqual(_.extend({}, {
+      a: 'b'
+    }).a, 'b', 'can extend an object with the attributes of another');
+    assert.strictEqual(_.extend({
+      a: 'x'
+    }, {
+      a: 'b'
+    }).a, 'b', 'properties in source override destination');
+    assert.strictEqual(_.extend({
+      x: 'x'
+    }, {
+      a: 'b'
+    }).x, 'x', "properties not in source don't get overridden");
+    result = _.extend({
+      x: 'x'
+    }, {
+      a: 'a'
+    }, {
+      b: 'b'
+    });
+    assert.deepEqual(result, {
+      x: 'x',
+      a: 'a',
+      b: 'b'
+    }, 'can extend from multiple source objects');
+    result = _.extend({
+      x: 'x'
+    }, {
+      a: 'a',
+      x: 2
+    }, {
+      a: 'b'
+    });
+    assert.deepEqual(result, {
+      x: 2,
+      a: 'b'
+    }, 'extending from multiple source objects last property trumps');
+    result = _.extend({}, {
+      a: void 0,
+      b: null
+    });
     assert.deepEqual(_.keys(result), ['a', 'b'], 'extend copies undefined values');
 
     var F = function() {};
-    F.prototype = {a: 'b'};
+    F.prototype = {
+      a: 'b'
+    };
     var subObj = new F();
     subObj.c = 'd';
-    assert.deepEqual(_.extend({}, subObj), {a: 'b', c: 'd'}, 'extend copies all properties from source');
+    assert.deepEqual(_.extend({}, subObj), {
+      a: 'b',
+      c: 'd'
+    }, 'extend copies all properties from source');
     _.extend(subObj, {});
     assert.notOk(subObj.hasOwnProperty('a'), "extend does not convert destination object's 'in' properties to 'own' properties");
 
     try {
       result = {};
-      _.extend(result, null, void 0, {a: 1});
+      _.extend(result, null, void 0, {
+        a: 1
+      });
     } catch (e) { /* ignored */ }
 
     assert.strictEqual(result.a, 1, 'should not error on `null` or `undefined` sources');
 
-    assert.strictEqual(_.extend(null, {a: 1}), null, 'extending null results in null');
-    assert.strictEqual(_.extend(void 0, {a: 1}), void 0, 'extending undefined results in undefined');
+    assert.strictEqual(_.extend(null, {
+      a: 1
+    }), null, 'extending null results in null');
+    assert.strictEqual(_.extend(void 0, {
+      a: 1
+    }), void 0, 'extending undefined results in undefined');
   });
 
   QUnit.test('extendOwn', function(assert) {
     var result;
-    assert.strictEqual(_.extendOwn({}, {a: 'b'}).a, 'b', 'can extend an object with the attributes of another');
-    assert.strictEqual(_.extendOwn({a: 'x'}, {a: 'b'}).a, 'b', 'properties in source override destination');
-    assert.strictEqual(_.extendOwn({x: 'x'}, {a: 'b'}).x, 'x', "properties not in source don't get overridden");
-    result = _.extendOwn({x: 'x'}, {a: 'a'}, {b: 'b'});
-    assert.deepEqual(result, {x: 'x', a: 'a', b: 'b'}, 'can extend from multiple source objects');
-    result = _.extendOwn({x: 'x'}, {a: 'a', x: 2}, {a: 'b'});
-    assert.deepEqual(result, {x: 2, a: 'b'}, 'extending from multiple source objects last property trumps');
-    assert.deepEqual(_.extendOwn({}, {a: void 0, b: null}), {a: void 0, b: null}, 'copies undefined values');
+    assert.strictEqual(_.extendOwn({}, {
+      a: 'b'
+    }).a, 'b', 'can extend an object with the attributes of another');
+    assert.strictEqual(_.extendOwn({
+      a: 'x'
+    }, {
+      a: 'b'
+    }).a, 'b', 'properties in source override destination');
+    assert.strictEqual(_.extendOwn({
+      x: 'x'
+    }, {
+      a: 'b'
+    }).x, 'x', "properties not in source don't get overridden");
+    result = _.extendOwn({
+      x: 'x'
+    }, {
+      a: 'a'
+    }, {
+      b: 'b'
+    });
+    assert.deepEqual(result, {
+      x: 'x',
+      a: 'a',
+      b: 'b'
+    }, 'can extend from multiple source objects');
+    result = _.extendOwn({
+      x: 'x'
+    }, {
+      a: 'a',
+      x: 2
+    }, {
+      a: 'b'
+    });
+    assert.deepEqual(result, {
+      x: 2,
+      a: 'b'
+    }, 'extending from multiple source objects last property trumps');
+    assert.deepEqual(_.extendOwn({}, {
+      a: void 0,
+      b: null
+    }), {
+      a: void 0,
+      b: null
+    }, 'copies undefined values');
 
     var F = function() {};
-    F.prototype = {a: 'b'};
+    F.prototype = {
+      a: 'b'
+    };
     var subObj = new F();
     subObj.c = 'd';
-    assert.deepEqual(_.extendOwn({}, subObj), {c: 'd'}, 'copies own properties from source');
+    assert.deepEqual(_.extendOwn({}, subObj), {
+      c: 'd'
+    }, 'copies own properties from source');
 
     result = {};
-    assert.deepEqual(_.extendOwn(result, null, void 0, {a: 1}), {a: 1}, 'should not error on `null` or `undefined` sources');
+    assert.deepEqual(_.extendOwn(result, null, void 0, {
+      a: 1
+    }), {
+      a: 1
+    }, 'should not error on `null` or `undefined` sources');
 
     _.each(['a', 5, null, false], function(val) {
-      assert.strictEqual(_.extendOwn(val, {a: 1}), val, 'extending non-objects results in returning the non-object value');
+      assert.strictEqual(_.extendOwn(val, {
+        a: 1
+      }), val, 'extending non-objects results in returning the non-object value');
     });
 
-    assert.strictEqual(_.extendOwn(void 0, {a: 1}), void 0, 'extending undefined results in undefined');
+    assert.strictEqual(_.extendOwn(void 0, {
+      a: 1
+    }), void 0, 'extending undefined results in undefined');
 
-    result = _.extendOwn({a: 1, 0: 2, 1: '5', length: 6}, {0: 1, 1: 2, length: 2});
-    assert.deepEqual(result, {a: 1, 0: 1, 1: 2, length: 2}, 'should treat array-like objects like normal objects');
+    result = _.extendOwn({
+      a: 1,
+      0: 2,
+      1: '5',
+      length: 6
+    }, {
+      0: 1,
+      1: 2,
+      length: 2
+    });
+    assert.deepEqual(result, {
+      a: 1,
+      0: 1,
+      1: 2,
+      length: 2
+    }, 'should treat array-like objects like normal objects');
   });
 
   QUnit.test('assign', function(assert) {
@@ -172,38 +322,85 @@
 
   QUnit.test('pick', function(assert) {
     var result;
-    result = _.pick({a: 1, b: 2, c: 3}, 'a', 'c');
-    assert.deepEqual(result, {a: 1, c: 3}, 'can restrict properties to those named');
-    result = _.pick({a: 1, b: 2, c: 3}, ['b', 'c']);
-    assert.deepEqual(result, {b: 2, c: 3}, 'can restrict properties to those named in an array');
-    result = _.pick({a: 1, b: 2, c: 3}, ['a'], 'b');
-    assert.deepEqual(result, {a: 1, b: 2}, 'can restrict properties to those named in mixed args');
+    result = _.pick({
+      a: 1,
+      b: 2,
+      c: 3
+    }, 'a', 'c');
+    assert.deepEqual(result, {
+      a: 1,
+      c: 3
+    }, 'can restrict properties to those named');
+    result = _.pick({
+      a: 1,
+      b: 2,
+      c: 3
+    }, ['b', 'c']);
+    assert.deepEqual(result, {
+      b: 2,
+      c: 3
+    }, 'can restrict properties to those named in an array');
+    result = _.pick({
+      a: 1,
+      b: 2,
+      c: 3
+    }, ['a'], 'b');
+    assert.deepEqual(result, {
+      a: 1,
+      b: 2
+    }, 'can restrict properties to those named in mixed args');
     result = _.pick(['a', 'b'], 1);
-    assert.deepEqual(result, {1: 'b'}, 'can pick numeric properties');
+    assert.deepEqual(result, {
+      1: 'b'
+    }, 'can pick numeric properties');
 
     _.each([null, void 0], function(val) {
       assert.deepEqual(_.pick(val, 'hasOwnProperty'), {}, 'Called with null/undefined');
       assert.deepEqual(_.pick(val, _.constant(true)), {});
     });
-    assert.deepEqual(_.pick(5, 'toString', 'b'), {toString: Number.prototype.toString}, 'can iterate primitives');
+    assert.deepEqual(_.pick(5, 'toString', 'b'), {
+      toString: Number.prototype.toString
+    }, 'can iterate primitives');
 
-    var data = {a: 1, b: 2, c: 3};
+    var data = {
+      a: 1,
+      b: 2,
+      c: 3
+    };
     var callback = function(value, key, object) {
-      assert.strictEqual(key, {1: 'a', 2: 'b', 3: 'c'}[value]);
+      assert.strictEqual(key, {
+        1: 'a',
+        2: 'b',
+        3: 'c'
+      }[value]);
       assert.strictEqual(object, data);
       return value !== this.value;
     };
-    result = _.pick(data, callback, {value: 2});
-    assert.deepEqual(result, {a: 1, c: 3}, 'can accept a predicate and context');
+    result = _.pick(data, callback, {
+      value: 2
+    });
+    assert.deepEqual(result, {
+      a: 1,
+      c: 3
+    }, 'can accept a predicate and context');
 
-    var Obj = function(){};
-    Obj.prototype = {a: 1, b: 2, c: 3};
+    var Obj = function() {};
+    Obj.prototype = {
+      a: 1,
+      b: 2,
+      c: 3
+    };
     var instance = new Obj();
-    assert.deepEqual(_.pick(instance, 'a', 'c'), {a: 1, c: 3}, 'include prototype props');
+    assert.deepEqual(_.pick(instance, 'a', 'c'), {
+      a: 1,
+      c: 3
+    }, 'include prototype props');
 
     assert.deepEqual(_.pick(data, function(val, key) {
       return this[key] === 3 && this === instance;
-    }, instance), {c: 3}, 'function is given context');
+    }, instance), {
+      c: 3
+    }, 'function is given context');
 
     assert.notOk(_.has(_.pick({}, 'foo'), 'foo'), 'does not set own property if property not in object');
     _.pick(data, function(value, key, obj) {
@@ -213,65 +410,140 @@
 
   QUnit.test('omit', function(assert) {
     var result;
-    result = _.omit({a: 1, b: 2, c: 3}, 'b');
-    assert.deepEqual(result, {a: 1, c: 3}, 'can omit a single named property');
-    result = _.omit({a: 1, b: 2, c: 3}, 'a', 'c');
-    assert.deepEqual(result, {b: 2}, 'can omit several named properties');
-    result = _.omit({a: 1, b: 2, c: 3}, ['b', 'c']);
-    assert.deepEqual(result, {a: 1}, 'can omit properties named in an array');
+    result = _.omit({
+      a: 1,
+      b: 2,
+      c: 3
+    }, 'b');
+    assert.deepEqual(result, {
+      a: 1,
+      c: 3
+    }, 'can omit a single named property');
+    result = _.omit({
+      a: 1,
+      b: 2,
+      c: 3
+    }, 'a', 'c');
+    assert.deepEqual(result, {
+      b: 2
+    }, 'can omit several named properties');
+    result = _.omit({
+      a: 1,
+      b: 2,
+      c: 3
+    }, ['b', 'c']);
+    assert.deepEqual(result, {
+      a: 1
+    }, 'can omit properties named in an array');
     result = _.omit(['a', 'b'], 0);
-    assert.deepEqual(result, {1: 'b'}, 'can omit numeric properties');
+    assert.deepEqual(result, {
+      1: 'b'
+    }, 'can omit numeric properties');
 
     assert.deepEqual(_.omit(null, 'a', 'b'), {}, 'non objects return empty object');
     assert.deepEqual(_.omit(void 0, 'toString'), {}, 'null/undefined return empty object');
     assert.deepEqual(_.omit(5, 'toString', 'b'), {}, 'returns empty object for primitives');
 
-    var data = {a: 1, b: 2, c: 3};
+    var data = {
+      a: 1,
+      b: 2,
+      c: 3
+    };
     var callback = function(value, key, object) {
-      assert.strictEqual(key, {1: 'a', 2: 'b', 3: 'c'}[value]);
+      assert.strictEqual(key, {
+        1: 'a',
+        2: 'b',
+        3: 'c'
+      }[value]);
       assert.strictEqual(object, data);
       return value !== this.value;
     };
-    result = _.omit(data, callback, {value: 2});
-    assert.deepEqual(result, {b: 2}, 'can accept a predicate');
+    result = _.omit(data, callback, {
+      value: 2
+    });
+    assert.deepEqual(result, {
+      b: 2
+    }, 'can accept a predicate');
 
-    var Obj = function(){};
-    Obj.prototype = {a: 1, b: 2, c: 3};
+    var Obj = function() {};
+    Obj.prototype = {
+      a: 1,
+      b: 2,
+      c: 3
+    };
     var instance = new Obj();
-    assert.deepEqual(_.omit(instance, 'b'), {a: 1, c: 3}, 'include prototype props');
+    assert.deepEqual(_.omit(instance, 'b'), {
+      a: 1,
+      c: 3
+    }, 'include prototype props');
 
     assert.deepEqual(_.omit(data, function(val, key) {
       return this[key] === 3 && this === instance;
-    }, instance), {a: 1, b: 2}, 'function is given context');
+    }, instance), {
+      a: 1,
+      b: 2
+    }, 'function is given context');
   });
 
   QUnit.test('defaults', function(assert) {
-    var options = {zero: 0, one: 1, empty: '', nan: NaN, nothing: null};
+    var options = {
+      zero: 0,
+      one: 1,
+      empty: '',
+      nan: NaN,
+      nothing: null
+    };
 
-    _.defaults(options, {zero: 1, one: 10, twenty: 20, nothing: 'str'});
+    _.defaults(options, {
+      zero: 1,
+      one: 10,
+      twenty: 20,
+      nothing: 'str'
+    });
     assert.strictEqual(options.zero, 0, 'value exists');
     assert.strictEqual(options.one, 1, 'value exists');
     assert.strictEqual(options.twenty, 20, 'default applied');
     assert.strictEqual(options.nothing, null, "null isn't overridden");
 
-    _.defaults(options, {empty: 'full'}, {nan: 'nan'}, {word: 'word'}, {word: 'dog'});
+    _.defaults(options, {
+      empty: 'full'
+    }, {
+      nan: 'nan'
+    }, {
+      word: 'word'
+    }, {
+      word: 'dog'
+    });
     assert.strictEqual(options.empty, '', 'value exists');
     assert.ok(_.isNaN(options.nan), "NaN isn't overridden");
     assert.strictEqual(options.word, 'word', 'new value is added, first one wins');
 
     try {
       options = {};
-      _.defaults(options, null, void 0, {a: 1});
+      _.defaults(options, null, void 0, {
+        a: 1
+      });
     } catch (e) { /* ignored */ }
 
     assert.strictEqual(options.a, 1, 'should not error on `null` or `undefined` sources');
 
-    assert.deepEqual(_.defaults(null, {a: 1}), {a: 1}, 'defaults skips nulls');
-    assert.deepEqual(_.defaults(void 0, {a: 1}), {a: 1}, 'defaults skips undefined');
+    assert.deepEqual(_.defaults(null, {
+      a: 1
+    }), {
+      a: 1
+    }, 'defaults skips nulls');
+    assert.deepEqual(_.defaults(void 0, {
+      a: 1
+    }), {
+      a: 1
+    }, 'defaults skips undefined');
   });
 
   QUnit.test('clone', function(assert) {
-    var moe = {name: 'moe', lucky: [13, 27, 34]};
+    var moe = {
+      name: 'moe',
+      lucky: [13, 27, 34]
+    };
     var clone = _.clone(moe);
     assert.strictEqual(clone.name, 'moe', 'the clone as the attributes of the original');
 
@@ -288,7 +560,10 @@
 
   QUnit.test('create', function(assert) {
     var Parent = function() {};
-    Parent.prototype = {foo: function() {}, bar: 2};
+    Parent.prototype = {
+      foo: function() {},
+      bar: 2
+    };
 
     _.each(['foo', null, void 0, 1], function(val) {
       assert.deepEqual(_.create(val), {}, 'should return empty object when a non-object is provided');
@@ -301,10 +576,14 @@
     assert.ok(new Child instanceof Parent, 'object should inherit prototype');
 
     var func = function() {};
-    Child.prototype = _.create(Parent.prototype, {func: func});
+    Child.prototype = _.create(Parent.prototype, {
+      func: func
+    });
     assert.strictEqual(Child.prototype.func, func, 'properties should be added to object');
 
-    Child.prototype = _.create(Parent.prototype, {constructor: Child});
+    Child.prototype = _.create(Parent.prototype, {
+      constructor: Child
+    });
     assert.strictEqual(Child.prototype.constructor, Child);
 
     Child.prototype.foo = 'foo';
@@ -317,6 +596,7 @@
       this.value = 1;
     }
     First.prototype.value = 1;
+
     function Second() {
       this.value = 1;
     }
@@ -339,7 +619,11 @@
 
     assert.notOk(_.isEqual('Curly', 'Larry'), 'String primitives with different values are not equal');
     assert.notOk(_.isEqual(new String('Curly'), new String('Larry')), 'String objects with different primitive values are not equal');
-    assert.notOk(_.isEqual(new String('Curly'), {toString: function(){ return 'Curly'; }}), 'String objects and objects with a custom `toString` method are not equal');
+    assert.notOk(_.isEqual(new String('Curly'), {
+      toString: function() {
+        return 'Curly';
+      }
+    }), 'String objects and objects with a custom `toString` method are not equal');
 
     // Number object and primitive comparisons.
     assert.ok(_.isEqual(75, 75), 'Identical number primitives are equal');
@@ -350,7 +634,11 @@
     assert.notOk(_.isEqual(0, new Number(-0)), 'Commutative equality is implemented for `new Number(0)` and `-0`');
 
     assert.notOk(_.isEqual(new Number(75), new Number(63)), 'Number objects with different primitive values are not equal');
-    assert.notOk(_.isEqual(new Number(63), {valueOf: function(){ return 63; }}), 'Number objects and objects with a `valueOf` method are not equal');
+    assert.notOk(_.isEqual(new Number(63), {
+      valueOf: function() {
+        return 63;
+      }
+    }), 'Number objects and objects with a `valueOf` method are not equal');
 
     // Comparisons involving `NaN`.
     assert.ok(_.isEqual(NaN, NaN), '`NaN` is equal to `NaN`');
@@ -381,7 +669,7 @@
     assert.ok(_.isEqual(new Date(2009, 9, 25), new Date(2009, 9, 25)), 'Date objects referencing identical times are equal');
     assert.notOk(_.isEqual(new Date(2009, 9, 25), new Date(2009, 11, 13)), 'Date objects referencing different times are not equal');
     assert.notOk(_.isEqual(new Date(2009, 11, 13), {
-      getTime: function(){
+      getTime: function() {
         return 12606876e5;
       }
     }), 'Date objects and objects with a `getTime` method are not equal');
@@ -396,14 +684,23 @@
     assert.notOk(_.isEqual(/(?:)/g, /(?:)/gi), 'RegExps with equivalent patterns and different flags are not equal');
     assert.notOk(_.isEqual(/Moe/gim, /Curly/gim), 'RegExps with different patterns and equivalent flags are not equal');
     assert.notOk(_.isEqual(/(?:)/gi, /(?:)/g), 'Commutative equality is implemented for RegExps');
-    assert.notOk(_.isEqual(/Curly/g, {source: 'Larry', global: true, ignoreCase: false, multiline: false}), 'RegExps and RegExp-like objects are not equal');
+    assert.notOk(_.isEqual(/Curly/g, {
+      source: 'Larry',
+      global: true,
+      ignoreCase: false,
+      multiline: false
+    }), 'RegExps and RegExp-like objects are not equal');
 
     // Empty arrays, array-like objects, and object literals.
     assert.ok(_.isEqual({}, {}), 'Empty object literals are equal');
     assert.ok(_.isEqual([], []), 'Empty array literals are equal');
     assert.ok(_.isEqual([{}], [{}]), 'Empty nested arrays and objects are equal');
-    assert.notOk(_.isEqual({length: 0}, []), 'Array-like objects and arrays are not equal.');
-    assert.notOk(_.isEqual([], {length: 0}), 'Commutative equality is implemented for array-like objects');
+    assert.notOk(_.isEqual({
+      length: 0
+    }, []), 'Array-like objects and arrays are not equal.');
+    assert.notOk(_.isEqual([], {
+      length: 0
+    }), 'Commutative equality is implemented for array-like objects');
 
     assert.notOk(_.isEqual({}, []), 'Object literals and array literals are not equal');
     assert.notOk(_.isEqual([], {}), 'Commutative equality is implemented for objects and arrays');
@@ -413,8 +710,12 @@
     assert.ok(_.isEqual([/Moe/g, new Date(2009, 9, 25)], [/Moe/g, new Date(2009, 9, 25)]), 'Arrays containing equivalent elements are equal');
 
     // Multi-dimensional arrays.
-    var a = [new Number(47), false, 'Larry', /Moe/, new Date(2009, 11, 13), ['running', 'biking', new String('programming')], {a: 47}];
-    var b = [new Number(47), false, 'Larry', /Moe/, new Date(2009, 11, 13), ['running', 'biking', new String('programming')], {a: 47}];
+    var a = [new Number(47), false, 'Larry', /Moe/, new Date(2009, 11, 13), ['running', 'biking', new String('programming')], {
+      a: 47
+    }];
+    var b = [new Number(47), false, 'Larry', /Moe/, new Date(2009, 11, 13), ['running', 'biking', new String('programming')], {
+      a: 47
+    }];
     assert.ok(_.isEqual(a, b), 'Arrays containing nested arrays and objects are recursively compared');
 
     // Overwrite the methods defined in ES 5.1 section 15.4.4.
@@ -438,13 +739,55 @@
     assert.ok(_.isEqual(sparse, [void 0, 5]), 'Handles sparse arrays as dense');
 
     // Simple objects.
-    assert.ok(_.isEqual({a: 'Curly', b: 1, c: true}, {a: 'Curly', b: 1, c: true}), 'Objects containing identical primitives are equal');
-    assert.ok(_.isEqual({a: /Curly/g, b: new Date(2009, 11, 13)}, {a: /Curly/g, b: new Date(2009, 11, 13)}), 'Objects containing equivalent members are equal');
-    assert.notOk(_.isEqual({a: 63, b: 75}, {a: 61, b: 55}), 'Objects of identical sizes with different values are not equal');
-    assert.notOk(_.isEqual({a: 63, b: 75}, {a: 61, c: 55}), 'Objects of identical sizes with different property names are not equal');
-    assert.notOk(_.isEqual({a: 1, b: 2}, {a: 1}), 'Objects of different sizes are not equal');
-    assert.notOk(_.isEqual({a: 1}, {a: 1, b: 2}), 'Commutative equality is implemented for objects');
-    assert.notOk(_.isEqual({x: 1, y: void 0}, {x: 1, z: 2}), 'Objects with identical keys and different values are not equivalent');
+    assert.ok(_.isEqual({
+      a: 'Curly',
+      b: 1,
+      c: true
+    }, {
+      a: 'Curly',
+      b: 1,
+      c: true
+    }), 'Objects containing identical primitives are equal');
+    assert.ok(_.isEqual({
+      a: /Curly/g,
+      b: new Date(2009, 11, 13)
+    }, {
+      a: /Curly/g,
+      b: new Date(2009, 11, 13)
+    }), 'Objects containing equivalent members are equal');
+    assert.notOk(_.isEqual({
+      a: 63,
+      b: 75
+    }, {
+      a: 61,
+      b: 55
+    }), 'Objects of identical sizes with different values are not equal');
+    assert.notOk(_.isEqual({
+      a: 63,
+      b: 75
+    }, {
+      a: 61,
+      c: 55
+    }), 'Objects of identical sizes with different property names are not equal');
+    assert.notOk(_.isEqual({
+      a: 1,
+      b: 2
+    }, {
+      a: 1
+    }), 'Objects of different sizes are not equal');
+    assert.notOk(_.isEqual({
+      a: 1
+    }, {
+      a: 1,
+      b: 2
+    }), 'Commutative equality is implemented for objects');
+    assert.notOk(_.isEqual({
+      x: 1,
+      y: void 0
+    }, {
+      x: 1,
+      z: 2
+    }), 'Objects with identical keys and different values are not equivalent');
 
     // `A` contains nested objects and arrays.
     a = {
@@ -480,8 +823,12 @@
     // Instances.
     assert.ok(_.isEqual(new First, new First), 'Object instances are equal');
     assert.notOk(_.isEqual(new First, new Second), 'Objects with different constructors and identical own properties are not equal');
-    assert.notOk(_.isEqual({value: 1}, new First), 'Object instances and objects sharing equivalent properties are not equal');
-    assert.notOk(_.isEqual({value: 2}, new Second), 'The prototype chain of objects should not be examined');
+    assert.notOk(_.isEqual({
+      value: 1
+    }, new First), 'Object instances and objects sharing equivalent properties are not equal');
+    assert.notOk(_.isEqual({
+      value: 2
+    }, new Second), 'The prototype chain of objects should not be examined');
 
     // Circular Arrays.
     (a = []).push(a);
@@ -501,8 +848,12 @@
     assert.notOk(_.isEqual(a, b), 'Comparison of circular references with non-circular references are not equal');
 
     // Circular Objects.
-    a = {abc: null};
-    b = {abc: null};
+    a = {
+      abc: null
+    };
+    b = {
+      abc: null
+    };
     a.abc = a;
     b.abc = b;
     assert.ok(_.isEqual(a, b), 'Objects containing circular references are equal');
@@ -514,14 +865,28 @@
     assert.notOk(_.isEqual(a, b), 'Objects containing circular references and different properties are not equal');
 
     // More circular objects #767.
-    a = {everything: 'is checked', but: 'this', is: 'not'};
+    a = {
+      everything: 'is checked',
+      but: 'this',
+      is: 'not'
+    };
     a.but = a;
-    b = {everything: 'is checked', but: {that: 'object'}, is: 'not'};
+    b = {
+      everything: 'is checked',
+      but: {
+        that: 'object'
+      },
+      is: 'not'
+    };
     assert.notOk(_.isEqual(a, b), 'Comparison of circular references with non-circular object references are not equal');
 
     // Cyclic Structures.
-    a = [{abc: null}];
-    b = [{abc: null}];
+    a = [{
+      abc: null
+    }];
+    b = [{
+      abc: null
+    }];
     (a[0].abc = a).push(a);
     (b[0].abc = b).push(b);
     assert.ok(_.isEqual(a, b), 'Cyclic structures are equal');
@@ -533,38 +898,89 @@
     assert.notOk(_.isEqual(a, b), 'Cyclic structures containing different properties are not equal');
 
     // Complex Circular References.
-    a = {foo: {b: {foo: {c: {foo: null}}}}};
-    b = {foo: {b: {foo: {c: {foo: null}}}}};
+    a = {
+      foo: {
+        b: {
+          foo: {
+            c: {
+              foo: null
+            }
+          }
+        }
+      }
+    };
+    b = {
+      foo: {
+        b: {
+          foo: {
+            c: {
+              foo: null
+            }
+          }
+        }
+      }
+    };
     a.foo.b.foo.c.foo = a;
     b.foo.b.foo.c.foo = b;
     assert.ok(_.isEqual(a, b), 'Cyclic structures with nested and identically-named properties are equal');
 
     // Chaining.
-    assert.notOk(_.isEqual(_({x: 1, y: void 0}).chain(), _({x: 1, z: 2}).chain()), 'Chained objects containing different values are not equal');
+    assert.notOk(_.isEqual(_({
+      x: 1,
+      y: void 0
+    }).chain(), _({
+      x: 1,
+      z: 2
+    }).chain()), 'Chained objects containing different values are not equal');
 
-    a = _({x: 1, y: 2}).chain();
-    b = _({x: 1, y: 2}).chain();
+    a = _({
+      x: 1,
+      y: 2
+    }).chain();
+    b = _({
+      x: 1,
+      y: 2
+    }).chain();
     assert.strictEqual(_.isEqual(a.isEqual(b), _(true)), true, '`isEqual` can be chained');
 
     // Objects without a `constructor` property
     if (Object.create) {
-      a = Object.create(null, {x: {value: 1, enumerable: true}});
-      b = {x: 1};
+      a = Object.create(null, {
+        x: {
+          value: 1,
+          enumerable: true
+        }
+      });
+      b = {
+        x: 1
+      };
       assert.ok(_.isEqual(a, b), 'Handles objects without a constructor (e.g. from Object.create');
     }
 
-    function Foo() { this.a = 1; }
+    function Foo() {
+      this.a = 1;
+    }
     Foo.prototype.constructor = null;
 
-    var other = {a: 1};
+    var other = {
+      a: 1
+    };
     assert.strictEqual(_.isEqual(new Foo, other), false, 'Objects from different constructors are not equal');
 
 
     // Tricky object cases val comparisons
     assert.strictEqual(_.isEqual([0], [-0]), false);
-    assert.strictEqual(_.isEqual({a: 0}, {a: -0}), false);
+    assert.strictEqual(_.isEqual({
+      a: 0
+    }, {
+      a: -0
+    }), false);
     assert.strictEqual(_.isEqual([NaN], [NaN]), true);
-    assert.strictEqual(_.isEqual({a: NaN}, {a: NaN}), true);
+    assert.strictEqual(_.isEqual({
+      a: NaN
+    }, {
+      a: NaN
+    }), true);
 
     if (typeof Symbol !== 'undefined') {
       var symbol = Symbol('x');
@@ -583,7 +999,9 @@
   QUnit.test('isEmpty', function(assert) {
     assert.notOk(_([1]).isEmpty(), '[1] is not empty');
     assert.ok(_.isEmpty([]), '[] is empty');
-    assert.notOk(_.isEmpty({one: 1}), '{one: 1} is not empty');
+    assert.notOk(_.isEmpty({
+      one: 1
+    }), '{one: 1} is not empty');
     assert.ok(_.isEmpty({}), '{} is empty');
     assert.ok(_.isEmpty(new RegExp('')), 'objects with prototype properties are empty');
     assert.ok(_.isEmpty(null), 'null is empty');
@@ -591,16 +1009,22 @@
     assert.ok(_.isEmpty(''), 'the empty string is empty');
     assert.notOk(_.isEmpty('moe'), 'but other strings are not');
 
-    var obj = {one: 1};
+    var obj = {
+      one: 1
+    };
     delete obj.one;
     assert.ok(_.isEmpty(obj), 'deleting all the keys from an object empties it');
 
-    var args = function(){ return arguments; };
+    var args = function() {
+      return arguments;
+    };
     assert.ok(_.isEmpty(args()), 'empty arguments object is empty');
     assert.notOk(_.isEmpty(args('')), 'non-empty arguments object is not empty');
 
     // covers collecting non-enumerable properties in IE < 9
-    var nonEnumProp = {toString: 5};
+    var nonEnumProp = {
+      toString: 5
+    };
     assert.notOk(_.isEmpty(nonEnumProp), 'non-enumerable property is not empty');
   });
 
@@ -612,7 +1036,9 @@
   }
 
   QUnit.test('isArguments', function(assert) {
-    var args = (function(){ return arguments; }(1, 2, 3));
+    var args = (function() {
+      return arguments;
+    }(1, 2, 3));
     assert.notOk(_.isArguments('string'), 'a string is not an arguments object');
     assert.notOk(_.isArguments(_.isArguments), 'a function is not an arguments object');
     assert.ok(_.isArguments(args), 'but the arguments object is an arguments object');
@@ -727,7 +1153,8 @@
       assert.notOk(_.isWeakMap(new Map()), 'a map is not a weakmap');
     }
     if (typeof WeakMap === 'function') {
-      var keyObj = {}, obj = new WeakMap();
+      var keyObj = {},
+        obj = new WeakMap();
       obj.set(keyObj, 'value');
       assert.ok(_.isWeakMap(obj), 'but a weakmap is');
     }
@@ -775,7 +1202,15 @@
     }
     if (typeof WeakSet === 'function') {
       var obj = new WeakSet();
-      obj.add({x: 1}, {y: 'string'}).add({y: 'string'}).add({z: [1, 2, 3]});
+      obj.add({
+        x: 1
+      }, {
+        y: 'string'
+      }).add({
+        y: 'string'
+      }).add({
+        z: [1, 2, 3]
+      });
       assert.ok(_.isWeakSet(obj), 'but a weakset is');
     }
   });
@@ -785,7 +1220,7 @@
     assert.notOk(_.isFunction([1, 2, 3]), 'arrays are not functions');
     assert.notOk(_.isFunction('moe'), 'strings are not functions');
     assert.ok(_.isFunction(_.isFunction), 'but functions are');
-    assert.ok(_.isFunction(function(){}), 'even anonymous ones');
+    assert.ok(_.isFunction(function() {}), 'even anonymous ones');
 
     if (testElement) {
       assert.notOk(_.isFunction(testElement), 'elements are not functions');
@@ -800,13 +1235,13 @@
   if (typeof Int8Array !== 'undefined') {
     QUnit.test('#1929 Typed Array constructors are functions', function(assert) {
       _.chain(['Float32Array', 'Float64Array', 'Int8Array', 'Int16Array', 'Int32Array', 'Uint8Array', 'Uint8ClampedArray', 'Uint16Array', 'Uint32Array'])
-      .map(_.propertyOf(typeof GLOBAL != 'undefined' ? GLOBAL : window))
-      .compact()
-      .each(function(TypedArray) {
-        // PhantomJS reports `typeof UInt8Array == 'object'` and doesn't report toString TypeArray
-        // as a function
-        assert.strictEqual(_.isFunction(TypedArray), Object.prototype.toString.call(TypedArray) === '[object Function]');
-      });
+        .map(_.propertyOf(typeof GLOBAL != 'undefined' ? GLOBAL : window))
+        .compact()
+        .each(function(TypedArray) {
+          // PhantomJS reports `typeof UInt8Array == 'object'` and doesn't report toString TypeArray
+          // as a function
+          assert.strictEqual(_.isFunction(TypedArray), Object.prototype.toString.call(TypedArray) === '[object Function]');
+        });
     });
   }
 
@@ -849,7 +1284,7 @@
     assert.notOk(_.isNaN(new Number(0)), 'wrapped 0 is not NaN');
     assert.ok(_.isNaN(NaN), 'but NaN is');
     assert.ok(_.isNaN(new Number(NaN)), 'wrapped NaN is still NaN');
-    if (typeof Symbol !== 'undefined'){
+    if (typeof Symbol !== 'undefined') {
       assert.notOk(_.isNaN(Symbol()), 'symbol is not NaN');
     }
   });
@@ -884,22 +1319,29 @@
 
   QUnit.test('tap', function(assert) {
     var intercepted = null;
-    var interceptor = function(obj) { intercepted = obj; };
+    var interceptor = function(obj) {
+      intercepted = obj;
+    };
     var returned = _.tap(1, interceptor);
     assert.strictEqual(intercepted, 1, 'passes tapped object to interceptor');
     assert.strictEqual(returned, 1, 'returns tapped object');
 
     returned = _([1, 2, 3]).chain().
-      map(function(n){ return n * 2; }).
-      max().
-      tap(interceptor).
-      value();
+    map(function(n) {
+      return n * 2;
+    }).
+    max().
+    tap(interceptor).
+    value();
     assert.strictEqual(returned, 6, 'can use tapped objects in a chain');
     assert.strictEqual(intercepted, returned, 'can use tapped objects in a chain');
   });
 
   QUnit.test('has', function(assert) {
-    var obj = {foo: 'bar', func: function(){}};
+    var obj = {
+      foo: 'bar',
+      func: function() {}
+    };
     assert.ok(_.has(obj, 'foo'), 'checks that the object has a property.');
     assert.notOk(_.has(obj, 'baz'), "returns false if the object doesn't have the property.");
     assert.ok(_.has(obj, 'func'), 'works for functions too.');
@@ -911,37 +1353,75 @@
     assert.strictEqual(_.has(null, 'foo'), false, 'returns false for null');
     assert.strictEqual(_.has(void 0, 'foo'), false, 'returns false for undefined');
 
-    assert.ok(_.has({a: {b: 'foo'}}, ['a', 'b']), 'can check for nested properties.');
-    assert.notOk(_.has({a: child}, ['a', 'foo']), 'does not check the prototype of nested props.');
+    assert.ok(_.has({
+      a: {
+        b: 'foo'
+      }
+    }, ['a', 'b']), 'can check for nested properties.');
+    assert.notOk(_.has({
+      a: child
+    }, ['a', 'foo']), 'does not check the prototype of nested props.');
   });
 
   QUnit.test('property', function(assert) {
-    var stooge = {name: 'moe'};
+    var stooge = {
+      name: 'moe'
+    };
     assert.strictEqual(_.property('name')(stooge), 'moe', 'should return the property with the given name');
     assert.strictEqual(_.property('name')(null), void 0, 'should return undefined for null values');
     assert.strictEqual(_.property('name')(void 0), void 0, 'should return undefined for undefined values');
     assert.strictEqual(_.property(null)('foo'), void 0, 'should return undefined for null object');
-    assert.strictEqual(_.property('x')({x: null}), null, 'can fetch null values');
+    assert.strictEqual(_.property('x')({
+      x: null
+    }), null, 'can fetch null values');
     assert.strictEqual(_.property('length')(null), void 0, 'does not crash on property access of non-objects');
 
     // Deep property access
-    assert.strictEqual(_.property('a')({a: 1}), 1, 'can get a direct property');
-    assert.strictEqual(_.property(['a', 'b'])({a: {b: 2}}), 2, 'can get a nested property');
-    assert.strictEqual(_.property(['a'])({a: false}), false, 'can fetch falsy values');
-    assert.strictEqual(_.property(['x', 'y'])({x: {y: null}}), null, 'can fetch null values deeply');
-    assert.strictEqual(_.property(['x', 'y'])({x: null}), void 0, 'does not crash on property access of nested non-objects');
-    assert.strictEqual(_.property([])({x: 'y'}), void 0, 'returns `undefined` for a path that is an empty array');
+    assert.strictEqual(_.property('a')({
+      a: 1
+    }), 1, 'can get a direct property');
+    assert.strictEqual(_.property(['a', 'b'])({
+      a: {
+        b: 2
+      }
+    }), 2, 'can get a nested property');
+    assert.strictEqual(_.property(['a'])({
+      a: false
+    }), false, 'can fetch falsy values');
+    assert.strictEqual(_.property(['x', 'y'])({
+      x: {
+        y: null
+      }
+    }), null, 'can fetch null values deeply');
+    assert.strictEqual(_.property(['x', 'y'])({
+      x: null
+    }), void 0, 'does not crash on property access of nested non-objects');
+    assert.strictEqual(_.property([])({
+      x: 'y'
+    }), void 0, 'returns `undefined` for a path that is an empty array');
   });
 
   QUnit.test('propertyOf', function(assert) {
-    var stoogeRanks = _.propertyOf({curly: 2, moe: 1, larry: 3});
+    var stoogeRanks = _.propertyOf({
+      curly: 2,
+      moe: 1,
+      larry: 3
+    });
     assert.strictEqual(stoogeRanks('curly'), 2, 'should return the property with the given name');
     assert.strictEqual(stoogeRanks(null), void 0, 'should return undefined for null values');
     assert.strictEqual(stoogeRanks(void 0), void 0, 'should return undefined for undefined values');
-    assert.strictEqual(_.propertyOf({a: null})('a'), null, 'can fetch null values');
+    assert.strictEqual(_.propertyOf({
+      a: null
+    })('a'), null, 'can fetch null values');
 
-    function MoreStooges() { this.shemp = 87; }
-    MoreStooges.prototype = {curly: 2, moe: 1, larry: 3};
+    function MoreStooges() {
+      this.shemp = 87;
+    }
+    MoreStooges.prototype = {
+      curly: 2,
+      moe: 1,
+      larry: 3
+    };
     var moreStoogeRanks = _.propertyOf(new MoreStooges());
     assert.strictEqual(moreStoogeRanks('curly'), 2, 'should return properties from further up the prototype chain');
 
@@ -951,105 +1431,206 @@
     var undefPropertyOf = _.propertyOf(void 0);
     assert.strictEqual(undefPropertyOf('curly'), void 0, 'should return undefined when obj is undefined');
 
-    var deepPropertyOf = _.propertyOf({curly: {number: 2}, joe: {number: null}});
+    var deepPropertyOf = _.propertyOf({
+      curly: {
+        number: 2
+      },
+      joe: {
+        number: null
+      }
+    });
     assert.strictEqual(deepPropertyOf(['curly', 'number']), 2, 'can fetch nested properties of obj');
     assert.strictEqual(deepPropertyOf(['joe', 'number']), null, 'can fetch nested null properties of obj');
   });
 
   QUnit.test('isMatch', function(assert) {
-    var moe = {name: 'Moe Howard', hair: true};
-    var curly = {name: 'Curly Howard', hair: false};
+    var moe = {
+      name: 'Moe Howard',
+      hair: true
+    };
+    var curly = {
+      name: 'Curly Howard',
+      hair: false
+    };
 
-    assert.strictEqual(_.isMatch(moe, {hair: true}), true, 'Returns a boolean');
-    assert.strictEqual(_.isMatch(curly, {hair: true}), false, 'Returns a boolean');
+    assert.strictEqual(_.isMatch(moe, {
+      hair: true
+    }), true, 'Returns a boolean');
+    assert.strictEqual(_.isMatch(curly, {
+      hair: true
+    }), false, 'Returns a boolean');
 
-    assert.strictEqual(_.isMatch(5, {__x__: void 0}), false, 'can match undefined props on primitives');
-    assert.strictEqual(_.isMatch({__x__: void 0}, {__x__: void 0}), true, 'can match undefined props');
+    assert.strictEqual(_.isMatch(5, {
+      __x__: void 0
+    }), false, 'can match undefined props on primitives');
+    assert.strictEqual(_.isMatch({
+      __x__: void 0
+    }, {
+      __x__: void 0
+    }), true, 'can match undefined props');
 
     assert.strictEqual(_.isMatch(null, {}), true, 'Empty spec called with null object returns true');
-    assert.strictEqual(_.isMatch(null, {a: 1}), false, 'Non-empty spec called with null object returns false');
+    assert.strictEqual(_.isMatch(null, {
+      a: 1
+    }), false, 'Non-empty spec called with null object returns false');
 
-    _.each([null, void 0], function(item) { assert.strictEqual(_.isMatch(item, null), true, 'null matches null'); });
-    _.each([null, void 0], function(item) { assert.strictEqual(_.isMatch(item, null), true, 'null matches {}'); });
-    assert.strictEqual(_.isMatch({b: 1}, {a: void 0}), false, 'handles undefined values (1683)');
+    _.each([null, void 0], function(item) {
+      assert.strictEqual(_.isMatch(item, null), true, 'null matches null');
+    });
+    _.each([null, void 0], function(item) {
+      assert.strictEqual(_.isMatch(item, null), true, 'null matches {}');
+    });
+    assert.strictEqual(_.isMatch({
+      b: 1
+    }, {
+      a: void 0
+    }), false, 'handles undefined values (1683)');
 
     _.each([true, 5, NaN, null, void 0], function(item) {
-      assert.strictEqual(_.isMatch({a: 1}, item), true, 'treats primitives as empty');
+      assert.strictEqual(_.isMatch({
+        a: 1
+      }, item), true, 'treats primitives as empty');
     });
 
     function Prototest() {}
     Prototest.prototype.x = 1;
     var specObj = new Prototest;
-    assert.strictEqual(_.isMatch({x: 2}, specObj), true, 'spec is restricted to own properties');
+    assert.strictEqual(_.isMatch({
+      x: 2
+    }, specObj), true, 'spec is restricted to own properties');
 
     specObj.y = 5;
-    assert.strictEqual(_.isMatch({x: 1, y: 5}, specObj), true);
-    assert.strictEqual(_.isMatch({x: 1, y: 4}, specObj), false);
+    assert.strictEqual(_.isMatch({
+      x: 1,
+      y: 5
+    }, specObj), true);
+    assert.strictEqual(_.isMatch({
+      x: 1,
+      y: 4
+    }, specObj), false);
 
-    assert.ok(_.isMatch(specObj, {x: 1, y: 5}), 'inherited and own properties are checked on the test object');
+    assert.ok(_.isMatch(specObj, {
+      x: 1,
+      y: 5
+    }), 'inherited and own properties are checked on the test object');
 
     Prototest.x = 5;
-    assert.ok(_.isMatch({x: 5, y: 1}, Prototest), 'spec can be a function');
+    assert.ok(_.isMatch({
+      x: 5,
+      y: 1
+    }, Prototest), 'spec can be a function');
 
     //null edge cases
-    var oCon = {constructor: Object};
+    var oCon = {
+      constructor: Object
+    };
     assert.deepEqual(_.map([null, void 0, 5, {}], _.partial(_.isMatch, _, oCon)), [false, false, false, true], 'doesnt falsy match constructor on undefined/null');
   });
 
   QUnit.test('matcher', function(assert) {
-    var moe = {name: 'Moe Howard', hair: true};
-    var curly = {name: 'Curly Howard', hair: false};
+    var moe = {
+      name: 'Moe Howard',
+      hair: true
+    };
+    var curly = {
+      name: 'Curly Howard',
+      hair: false
+    };
     var stooges = [moe, curly];
 
-    assert.strictEqual(_.matcher({hair: true})(moe), true, 'Returns a boolean');
-    assert.strictEqual(_.matcher({hair: true})(curly), false, 'Returns a boolean');
+    assert.strictEqual(_.matcher({
+      hair: true
+    })(moe), true, 'Returns a boolean');
+    assert.strictEqual(_.matcher({
+      hair: true
+    })(curly), false, 'Returns a boolean');
 
-    assert.strictEqual(_.matcher({__x__: void 0})(5), false, 'can match undefined props on primitives');
-    assert.strictEqual(_.matcher({__x__: void 0})({__x__: void 0}), true, 'can match undefined props');
+    assert.strictEqual(_.matcher({
+      __x__: void 0
+    })(5), false, 'can match undefined props on primitives');
+    assert.strictEqual(_.matcher({
+      __x__: void 0
+    })({
+      __x__: void 0
+    }), true, 'can match undefined props');
 
     assert.strictEqual(_.matcher({})(null), true, 'Empty spec called with null object returns true');
-    assert.strictEqual(_.matcher({a: 1})(null), false, 'Non-empty spec called with null object returns false');
+    assert.strictEqual(_.matcher({
+      a: 1
+    })(null), false, 'Non-empty spec called with null object returns false');
 
-    assert.strictEqual(_.find(stooges, _.matcher({hair: false})), curly, 'returns a predicate that can be used by finding functions.');
+    assert.strictEqual(_.find(stooges, _.matcher({
+      hair: false
+    })), curly, 'returns a predicate that can be used by finding functions.');
     assert.strictEqual(_.find(stooges, _.matcher(moe)), moe, 'can be used to locate an object exists in a collection.');
-    assert.deepEqual(_.filter([null, void 0], _.matcher({a: 1})), [], 'Do not throw on null values.');
+    assert.deepEqual(_.filter([null, void 0], _.matcher({
+      a: 1
+    })), [], 'Do not throw on null values.');
 
     assert.deepEqual(_.filter([null, void 0], _.matcher(null)), [null, void 0], 'null matches null');
     assert.deepEqual(_.filter([null, void 0], _.matcher({})), [null, void 0], 'null matches {}');
-    assert.deepEqual(_.filter([{b: 1}], _.matcher({a: void 0})), [], 'handles undefined values (1683)');
+    assert.deepEqual(_.filter([{
+      b: 1
+    }], _.matcher({
+      a: void 0
+    })), [], 'handles undefined values (1683)');
 
     _.each([true, 5, NaN, null, void 0], function(item) {
-      assert.strictEqual(_.matcher(item)({a: 1}), true, 'treats primitives as empty');
+      assert.strictEqual(_.matcher(item)({
+        a: 1
+      }), true, 'treats primitives as empty');
     });
 
     function Prototest() {}
     Prototest.prototype.x = 1;
     var specObj = new Prototest;
     var protospec = _.matcher(specObj);
-    assert.strictEqual(protospec({x: 2}), true, 'spec is restricted to own properties');
+    assert.strictEqual(protospec({
+      x: 2
+    }), true, 'spec is restricted to own properties');
 
     specObj.y = 5;
     protospec = _.matcher(specObj);
-    assert.strictEqual(protospec({x: 1, y: 5}), true);
-    assert.strictEqual(protospec({x: 1, y: 4}), false);
+    assert.strictEqual(protospec({
+      x: 1,
+      y: 5
+    }), true);
+    assert.strictEqual(protospec({
+      x: 1,
+      y: 4
+    }), false);
 
-    assert.ok(_.matcher({x: 1, y: 5})(specObj), 'inherited and own properties are checked on the test object');
+    assert.ok(_.matcher({
+      x: 1,
+      y: 5
+    })(specObj), 'inherited and own properties are checked on the test object');
 
     Prototest.x = 5;
-    assert.ok(_.matcher(Prototest)({x: 5, y: 1}), 'spec can be a function');
+    assert.ok(_.matcher(Prototest)({
+      x: 5,
+      y: 1
+    }), 'spec can be a function');
 
     // #1729
-    var o = {b: 1};
+    var o = {
+      b: 1
+    };
     var m = _.matcher(o);
 
-    assert.strictEqual(m({b: 1}), true);
+    assert.strictEqual(m({
+      b: 1
+    }), true);
     o.b = 2;
     o.a = 1;
-    assert.strictEqual(m({b: 1}), true, 'changing spec object doesnt change matches result');
+    assert.strictEqual(m({
+      b: 1
+    }), true, 'changing spec object doesnt change matches result');
 
 
     //null edge cases
-    var oCon = _.matcher({constructor: Object});
+    var oCon = _.matcher({
+      constructor: Object
+    });
     assert.deepEqual(_.map([null, void 0, 5, {}], oCon), [false, false, false, true], 'doesnt falsy match constructor on undefined/null');
   });
 
@@ -1059,9 +1640,18 @@
 
   QUnit.test('findKey', function(assert) {
     var objects = {
-      a: {a: 0, b: 0},
-      b: {a: 1, b: 1},
-      c: {a: 2, b: 2}
+      a: {
+        a: 0,
+        b: 0
+      },
+      b: {
+        a: 1,
+        b: 1
+      },
+      c: {
+        a: 2,
+        b: 2
+      }
     };
 
     assert.strictEqual(_.findKey(objects, function(obj) {
@@ -1086,69 +1676,141 @@
       return a.foo === null;
     }), void 0);
 
-    _.findKey({a: {a: 1}}, function(a, key, obj) {
+    _.findKey({
+      a: {
+        a: 1
+      }
+    }, function(a, key, obj) {
       assert.strictEqual(key, 'a');
-      assert.deepEqual(obj, {a: {a: 1}});
+      assert.deepEqual(obj, {
+        a: {
+          a: 1
+        }
+      });
       assert.strictEqual(this, objects, 'called with context');
     }, objects);
 
     var array = [1, 2, 3, 4];
     array.match = 55;
-    assert.strictEqual(_.findKey(array, function(x) { return x === 55; }), 'match', 'matches array-likes keys');
+    assert.strictEqual(_.findKey(array, function(x) {
+      return x === 55;
+    }), 'match', 'matches array-likes keys');
   });
 
 
   QUnit.test('mapObject', function(assert) {
-    var obj = {a: 1, b: 2};
+    var obj = {
+      a: 1,
+      b: 2
+    };
     var objects = {
-      a: {a: 0, b: 0},
-      b: {a: 1, b: 1},
-      c: {a: 2, b: 2}
+      a: {
+        a: 0,
+        b: 0
+      },
+      b: {
+        a: 1,
+        b: 1
+      },
+      c: {
+        a: 2,
+        b: 2
+      }
     };
 
     assert.deepEqual(_.mapObject(obj, function(val) {
       return val * 2;
-    }), {a: 2, b: 4}, 'simple objects');
+    }), {
+      a: 2,
+      b: 4
+    }, 'simple objects');
 
     assert.deepEqual(_.mapObject(objects, function(val) {
-      return _.reduce(val, function(memo, v){
+      return _.reduce(val, function(memo, v) {
         return memo + v;
       }, 0);
-    }), {a: 0, b: 2, c: 4}, 'nested objects');
+    }), {
+      a: 0,
+      b: 2,
+      c: 4
+    }, 'nested objects');
 
     assert.deepEqual(_.mapObject(obj, function(val, key, o) {
       return o[key] * 2;
-    }), {a: 2, b: 4}, 'correct keys');
+    }), {
+      a: 2,
+      b: 4
+    }, 'correct keys');
 
     assert.deepEqual(_.mapObject([1, 2], function(val) {
       return val * 2;
-    }), {0: 2, 1: 4}, 'check behavior for arrays');
+    }), {
+      0: 2,
+      1: 4
+    }, 'check behavior for arrays');
 
     assert.deepEqual(_.mapObject(obj, function(val) {
       return val * this.multiplier;
-    }, {multiplier: 3}), {a: 3, b: 6}, 'keep context');
+    }, {
+      multiplier: 3
+    }), {
+      a: 3,
+      b: 6
+    }, 'keep context');
 
-    assert.deepEqual(_.mapObject({a: 1}, function() {
+    assert.deepEqual(_.mapObject({
+      a: 1
+    }, function() {
       return this.length;
-    }, [1, 2]), {a: 2}, 'called with context');
+    }, [1, 2]), {
+      a: 2
+    }, 'called with context');
 
-    var ids = _.mapObject({length: 2, 0: {id: '1'}, 1: {id: '2'}}, function(n){
+    var ids = _.mapObject({
+      length: 2,
+      0: {
+        id: '1'
+      },
+      1: {
+        id: '2'
+      }
+    }, function(n) {
       return n.id;
     });
-    assert.deepEqual(ids, {length: void 0, 0: '1', 1: '2'}, 'Check with array-like objects');
+    assert.deepEqual(ids, {
+      length: void 0,
+      0: '1',
+      1: '2'
+    }, 'Check with array-like objects');
 
     // Passing a property name like _.pluck.
-    var people = {a: {name: 'moe', age: 30}, b: {name: 'curly', age: 50}};
-    assert.deepEqual(_.mapObject(people, 'name'), {a: 'moe', b: 'curly'}, 'predicate string map to object properties');
+    var people = {
+      a: {
+        name: 'moe',
+        age: 30
+      },
+      b: {
+        name: 'curly',
+        age: 50
+      }
+    };
+    assert.deepEqual(_.mapObject(people, 'name'), {
+      a: 'moe',
+      b: 'curly'
+    }, 'predicate string map to object properties');
 
-    _.each([null, void 0, 1, 'abc', [], {}, void 0], function(val){
+    _.each([null, void 0, 1, 'abc', [], {}, void 0], function(val) {
       assert.deepEqual(_.mapObject(val, _.identity), {}, 'mapValue identity');
     });
 
-    var Proto = function(){ this.a = 1; };
+    var Proto = function() {
+      this.a = 1;
+    };
     Proto.prototype.b = 1;
     var protoObj = new Proto();
-    assert.deepEqual(_.mapObject(protoObj, _.identity), {a: 1}, 'ignore inherited values from prototypes');
+    assert.deepEqual(_.mapObject(protoObj, _.identity), {
+      a: 1
+    }, 'ignore inherited values from prototypes');
 
   });
 }());

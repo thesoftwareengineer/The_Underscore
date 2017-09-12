@@ -983,6 +983,23 @@
   };
   /**Objects**/
 
+  // Return all keys in an object including arrays and functions
+  _.keys = function(object) {
+    if (!object || !_.isObject(object)) return [];
+    return Object.keys(object);
+  };
+
+  // Retrieves all names of objects own properties
+  _.allKeys = function(object) {
+    if (!object || !_.isObject(object)) return [];
+    var keys = _.keys(object);
+    while (object = Object.getPrototypeOf(object)) {
+      keys = keys.concat(_.keys(object));
+    }
+    return keys;
+  }
+
+  // Returns values in an object
   _.values = function(object) {
     const keys = Object.keys(object);
     const array = Array(keys.length);
@@ -991,6 +1008,24 @@
     }
     return array;
   };
+
+  // Return array containing lists of key, value pairs
+  _.pairs = function(object) {
+    const keys = _.keys(object);
+    const values = _.values(object);
+    return _.zip(keys, values);
+  };
+
+  // Returns whether object is an array or not
+  _.isArray = function(object) {
+    return object instanceof Array;
+  };
+
+  // Return whether value is an object or not
+  _.isObject = function(object) {
+    var type = typeof object;
+    return type === 'function' || type === 'object' && !!object;
+  }
 
   /**Utility**/
 
