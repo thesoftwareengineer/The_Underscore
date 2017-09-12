@@ -1112,12 +1112,22 @@
       if (!iteratee(object[keys[i]], keys[i], object)) omit[keys[i]] = object[keys[i]];
     }
     return omit;
-  }
+  };
+
+  _.defaults = function(object, ...defaults) {
+    if (!object || !defaults) return destination;
+    for (var i = 0; i < defaults.length; i++) {
+      for (var key in defaults[i]) {
+        if (!_.has(object, key)) object[key] = defaults[i][key];
+      }
+    }
+  };
 
   _.has = function(object, key) {
     if (!object) return false;
     return Object.prototype.hasOwnProperty.call(object, key);
   }
+
   /**Utility**/
 
   _.identity = function(value) {
