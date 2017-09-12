@@ -23,10 +23,10 @@
   // Save the previous value of the `_` variable.
   // var previousUnderscore = root._;
 
-  // Save bytes in the minified (but not gzipped) version:
-  var ArrayProto = Array.prototype,
-    ObjProto = Object.prototype;
-  var SymbolProto = typeof Symbol !== 'undefined' ? Symbol.prototype : null;
+  // // Save bytes in the minified (but not gzipped) version:
+  // var ArrayProto = Array.prototype,
+  //   ObjProto = Object.prototype;
+  // var SymbolProto = typeof Symbol !== 'undefined' ? Symbol.prototype : null;
 
   // Create quick reference variables for speed access to core prototypes.
   // var push = ArrayProto.push,
@@ -141,6 +141,10 @@
     return list;
   };
 
+  _.map = function(list, iteratee, context) {};
+
+  _.reduce = function(list, iteratee, memo, context) {};
+
   // "Plucks" all values that match key in each
   // element and returns them as an array.
   _.pluck = function(list, propertyName) {
@@ -214,7 +218,6 @@
     // iteratee criteria.
     _.sortBy = function(list, iteratee, context) {
       if (!list) return [];
-      // console.log(iteratee);
       iteratee = _.iteratee(iteratee, context);
       list = list instanceof Array ? list : _.values(list);
       const indices = this.range(list.length);
@@ -939,11 +942,10 @@
   // Generate appropriate iteratee cb function. Note: base of
   // orginal as I had no idea what this functions purpose was.
   _.iteratee = function(iteratee, context) {
-
     // if null return whatever value was passed to function
     if (iteratee == null) return _.identity;
     // check if already a function and return it with context
-    if (iteratee instanceof Function) {
+    if (_.isFunction(iteratee)) {
       var cb = iteratee;
       if (context) {
         cb = function() {
@@ -967,13 +969,14 @@
     // return property if it exists including deep property
     // when iteratee is an array.
     return function(obj) {
-      if (iteratee instanceof Array) {
+
+      if (_.isArray(iteratee)) {
         for (var i = 0; i < iteratee.length; i++) {
           obj = obj[iteratee[i]];
         }
         return obj;
       }
-      if (Object.keys(obj).length !== 0) {
+      if (_.isObject(iteratee)) {
         return obj[iteratee];
       } else {
         return void 0;
@@ -1027,12 +1030,109 @@
     return type === 'function' || type === 'object' && !!object;
   }
 
+  // Returns object swapping keys and values.
+  _.invert = function(object) {
+    if (!_.isObject(object)) return {};
+    const keys = _.keys(object);
+    const values = _.values(object);
+    var objInv = {};
+    for (var i = 0; i < values.length; i++) objInv[values[i]] = keys[i];
+    return objInv;
+  };
+
+  // Returns sorted list of names of every method in object
+  _.functions = _.methods = function(object) {
+    const methods = [];
+    for (var key in object) {
+      if (_.isFunction(object[key])) methods.push(key);
+    }
+    return methods.sort();
+  };
+
+  // Copies all properties in each source to destination
+  _.extend = function(destination, ...sources) {
+    if (!sources || !destination) return destination;
+    for (var i = 0; i < sources.length; i++) {
+      // Now get all properties in source
+      for (var key in sources[i]) destination[key] = sources[i][key];
+    }
+    return destination
+  };
+
+  // Similar to extend but only goes to own properties i.e. s = new foo()
+  // and foo has 'a' as a propterty and s has 'b' as a property, then
+  // only the 'b' property will be added unlike the extend
+  _.extendOwn = _.assign = function(destination, ...sources) {
+    if (!sources || !destination) return destination;
+    for (var i = 0; i < sources.length; i++) {
+      // Only get own properties in source
+      const keys = _.keys(sources[i]);
+      for (var j = 0; j < keys.length; j++) destination[keys[j]] = sources[i][keys[j]];
+    }
+    return destination
+  };
+
+  // Returns new object that contains only the passed keys
+  _.pick = function(object, iteratee, context) {
+    if (!object) return {};
+    const picked = {};
+    var keys = [];
+    // Get keys directly as predicate function was passed
+    if (_.isFunction(iteratee)) {
+      keys = _.allKeys(object);
+      iteratee = _.iteratee(iteratee, context);
+    } else {
+      keys = _.flatten(_.toArray(arguments).slice(1));
+      iteratee = function(value, key, object) {
+        return object[key] != undefined;
+      };
+    }
+    for (var i = 0; i < keys.length; i++) {
+      if (iteratee(object[keys[i]], keys[i], object)) picked[keys[i]] = object[keys[i]];
+    }
+    return picked;
+  }
+
+  // Like pick but instead omits keys
+  _.omit = function(object, iteratee, context) {
+    if (!object) return {};
+    const omit = {};
+    var keys = _.allKeys(object);
+    if (_.isFunction(iteratee)) {
+      iteratee = _.iteratee(iteratee, context);
+    } else {
+      var keysOmit = _.flatten(_.toArray(arguments).slice(1));
+      iteratee = function(value, key, object) {
+        // Make sure '0' == 0 since keys can also be numeric
+        if (!isNaN(key)) key = Number(key);
+        return keysOmit.indexOf(key) !== -1;
+      };
+    }
+    for (var i = 0; i < keys.length; i++) {
+      if (!iteratee(object[keys[i]], keys[i], object)) omit[keys[i]] = object[keys[i]];
+    }
+    return omit;
+  }
+
+  _.has = function(object, key) {
+    if (!object) return false;
+    return Object.prototype.hasOwnProperty.call(object, key);
+  }
   /**Utility**/
 
   _.identity = function(value) {
     return value;
+  };
+
+  _.constant = function(value) {
+    return function() {
+      return value;
+    }
   }
 
+  _.isFunction = function(obj) {
+    return obj instanceof Function;
+  }
   /**Chaining**/
 
 
