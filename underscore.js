@@ -1114,6 +1114,8 @@
     return omit;
   };
 
+  // Similar to extend, but fills in only key values pairs
+  // that are not already defined
   _.defaults = function(object, ...defaults) {
     if (!object || !defaults) return destination;
     for (var i = 0; i < defaults.length; i++) {
@@ -1123,11 +1125,112 @@
     }
   };
 
+  // Create shallow copy of object and nested objects copied
+  // by reference.
+  _.clone = function(object) {
+    if (!_.isObject(object)) return object;
+    // Basically extend to an empty object
+    return _.extend({}, object);
+  };
+
+  // Creates new object from prototype if properties
+  // exist will add own properties. Basically
+  // _.extendOwn with object created as the destination.
+  _.create = function(prototype, props) {
+    if (!_.isObject(prototype)) return {};
+    return _.extendOwn(Object.create(prototype), props)
+  };
+
+  // Deep comparison of two objects to determine if they
+  // are equivalent.
+  _.isEqual = function(a, b, aStack, bStack) {
+    if (_.isNaN(a) && _.isNaN(b)) return true;
+    if (a === b) return a !== 0 || 1 / a === 1 / b;
+    if (!a || !b) return a === b;
+    if (a instanceof RegExp || b instanceof RegExp) return a.source === b.source &&
+      a.global === b.global && a.ignoreCase === b.ignoreCase &&
+      a.multiline === b.multiline;
+    if (a.constructor !== b.constructor) return false;
+    if (a instanceof Date || b instanceof Date) return a.getTime() === b.getTime();
+    if (_.isFunction(a) || _.isFunction(b)) return false;
+    try {
+      return JSON.stringify(a) === JSON.stringify(b);
+    } catch (e) {
+      return deep(a, b, aStack, bStack);
+    }
+  };
+
+  // Function for when recursion is needed to check inner elements for equality
+  // as obj1 === obj2 will never return true
+  var deep = function(a, b, aStack, bStack) {
+
+    const areArrays = toString.call(a) === '[object Array]';
+    if (!areArrays) {
+      if (typeof a != 'object' || typeof b != 'object') return false;
+      var aCtor = a.constructor,
+        bCtor = b.constructor;
+      if (aCtor !== bCtor && !(_.isFunction(aCtor) && aCtor instanceof aCtor &&
+          _.isFunction(bCtor) && bCtor instanceof bCtor) &&
+        ('constructor' in a && 'constructor' in b)) {
+        return false;
+      }
+    }
+
+    aStack = aStack || [];
+    bStack = bStack || [];
+    var length = aStack.length;
+    while (length--) {
+      if (aStack[length] === a) return bStack[length] === b;
+    }
+
+    aStack.push(a);
+    bStack.push(b);
+
+    if (areArrays) {
+      length = a.length;
+      if (length !== b.length) return false;
+      while (length--) {
+        if (!_.isEqual(a[length], b[length], aStack, bStack)) return false;
+      }
+    } else {
+      const keys = _.keys(a);
+      var key;
+      length = keys.length;
+      if (length !== _.keys(b).length) return false;
+      while (length--) {
+        key = keys[length];
+        if (!(_.has(b, key) && _.isEqual(a[key], b[key], aStack, bStack))) return false;
+      }
+    }
+    aStack.pop();
+    bStack.pop();
+    return true;
+  }
+
+
+  // Return true if an enumerable object contaings no values
+  _.isEmpty = function(object) {
+    if (!object) return true;
+    if (!_.isObject(object)) object.length === 0;
+    return _.values(object).length === 0;
+  };
+
   _.has = function(object, key) {
     if (!object) return false;
     return Object.prototype.hasOwnProperty.call(object, key);
-  }
+  };
 
+  _.isFunction = function(obj) {
+    return obj instanceof Function;
+  };
+
+  _.isNumber = function(object) {
+    return toString.call(object) === '[object Number]';
+  };
+
+  _.isNaN = function(object) {
+    return _.isNumber(object) && isNaN(object);
+  };
   /**Utility**/
 
   _.identity = function(value) {
@@ -1138,11 +1241,9 @@
     return function() {
       return value;
     }
-  }
+  };
 
-  _.isFunction = function(obj) {
-    return obj instanceof Function;
-  }
+
   /**Chaining**/
 
 
