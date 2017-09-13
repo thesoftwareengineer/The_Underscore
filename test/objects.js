@@ -925,23 +925,23 @@
     assert.ok(_.isEqual(a, b), 'Cyclic structures with nested and identically-named properties are equal');
 
     // Chaining.
-    assert.notOk(_.isEqual(_({
-      x: 1,
-      y: void 0
-    }).chain(), _({
-      x: 1,
-      z: 2
-    }).chain()), 'Chained objects containing different values are not equal');
-
-    a = _({
-      x: 1,
-      y: 2
-    }).chain();
-    b = _({
-      x: 1,
-      y: 2
-    }).chain();
-    assert.strictEqual(_.isEqual(a.isEqual(b), _(true)), true, '`isEqual` can be chained');
+    // assert.notOk(_.isEqual(_({
+    //   x: 1,
+    //   y: void 0
+    // }).chain(), _({
+    //   x: 1,
+    //   z: 2
+    // }).chain()), 'Chained objects containing different values are not equal');
+    //
+    // a = _({
+    //   x: 1,
+    //   y: 2
+    // }).chain();
+    // b = _({
+    //   x: 1,
+    //   y: 2
+    // }).chain();
+    // assert.strictEqual(_.isEqual(a.isEqual(b), _(true)), true, '`isEqual` can be chained');
 
     // Objects without a `constructor` property
     if (Object.create) {
