@@ -9,6 +9,9 @@
 
 (function() {
 
+  var root = this;
+
+  var previousUnderscore = root._;
   //Added from orginal for compatibility with test suite
   // Baseline setup
   // --------------
@@ -16,32 +19,9 @@
   // Establish the root object, `window` (`self`) in the browser, `global`
   // on the server, or `this` in some virtual machines. We use `self`
   // instead of `window` for `WebWorker` support.
-  var root = typeof self == 'object' && self.self === self && self ||
-    typeof global == 'object' && global.global === global && global ||
-    this || {};
-
-  // Save the previous value of the `_` variable.
-  // var previousUnderscore = root._;
-
-  // // Save bytes in the minified (but not gzipped) version:
-  // var ArrayProto = Array.prototype,
-  //   ObjProto = Object.prototype;
-  // var SymbolProto = typeof Symbol !== 'undefined' ? Symbol.prototype : null;
-
-  // Create quick reference variables for speed access to core prototypes.
-  // var push = ArrayProto.push,
-  //   slice = ArrayProto.slice,
-  //   toString = ObjProto.toString,
-  //   hasOwnProperty = ObjProto.hasOwnProperty;
-
-  // All **ECMAScript 5** native function implementations that we hope to use
-  // are declared here.
-  // var nativeIsArray = Array.isArray,
-  //   nativeKeys = Object.keys,
-  //   nativeCreate = Object.create;
-
-  // Naked function reference for surrogate-prototype-swapping.
-  // var Ctor = function() {};
+  // var root = typeof self == 'object' && self.self === self && self ||
+  //   typeof global == 'object' && global.global === global && global ||
+  //   this || {};
 
   // Create a safe reference to the Underscore object for use below.
   var _ = function(obj) {
@@ -1445,21 +1425,118 @@
 
   /**Utility**/
 
+  // give control of _ back to previous owner
+  _.noConflict = function() {
+    root._ = previousUnderscore;
+    return this;
+  };
+
+  // Default iteratee function
   _.identity = function(value) {
     return value;
   };
 
+  // Similar to identity, but returns a function that returns
+  // a the passed in value.
   _.constant = function(value) {
     return function() {
       return value;
     }
   };
 
+  // Returns undefined
   _.noop = function() {
     return undefined;
+  };
+
+  _.random = function(min, max) {
+    if (!max) {
+      max = min;
+      min = 0;
+    }
+    return randInt(min, max);
+  };
+
+  // Returns integer of current timestamp
+  _.now = function() {
+    return new Date().getTime();
+  };
+
+  // Return globally-unique id and adds prefix if passed
+  //declare global id
+  var id = Math.round(Math.random() * 1000);
+  _.uniqueId = function(prefix) {
+    if (!prefix) prefix = '';
+    return prefix + id++ + '';
+  };
+
+  // Invokes iteratee n times and iteratee with index
+  // argument.
+  _.times = function(n, iteratee, context) {
+    if (n <= 0) return [];
+    iteratee = _.iteratee(iteratee, context);
+    const results = Array(n);
+    for (var i = 0; i < n; i++) {
+      results[i] = iteratee(i);
+    }
+    return results;
+  };
+
+  // Escapes a string ifor instertion into HTML
+  // replacing &, <, >, ", and '
+  const escapes = {
+    '&': '&amp',
+    '<': '&lt',
+    '>': '&gt',
+    '"': '&quot',
+    "'": '&#39'
   }
 
+  // Adds escapes to a string
+  _.escape = function(string) {
+    if (!string) return '';
+    string = string.replace(/&/g, '&amp');
+    string = string.replace(/</g, '&lt');
+    string = string.replace(/>/g, '&gt');
+    string = string.replace(/"/g, '&quot');
+    string = string.replace(/'/g, '&#39');
+    string = string.replace(/`/g, '&#x60')
+    return string;
+  };
 
+  // Opposite of _.escapes replaces escapes
+  _.unescape = function(string) {
+    if (!string) return '';
+    string = string.replace(/&amp/g, '&');
+    string = string.replace(/&lt/g, '<');
+    string = string.replace(/&gt/g, '>');
+    string = string.replace(/&quot/g, '"');
+    string = string.replace(/&#39/g, '\'');
+    string = string.replace(/&#x60/g, '`')
+    return string;
+  }
+
+  // Compiles JS templates into functions that can be evaluated
+  // for rendering
+  _.template = function(templateString, settings) {
+
+  }
+
+  // If value of names property is functions the invoke with
+  // object as context otherwise return it.
+  _.result = function(object, property, defaultValue) {
+    if (!_.isArray(property)) property = [property];
+    const length = property.length;
+    if (length) {
+      var obj;
+      for (var i = 0; i < length; i++) {
+        obj = object == null ? void 0 : object[property[i]];
+        if (obj === undefined) obj = defaultValue, i = length;
+        object = _.isFunction(obj) ? obj.call(object) : obj;
+      }
+    } else object = _.isFunction(defaultValue) ? defaultValue.call(object) : defaultValue;
+    return object;
+  }
   /**Chaining**/
 
   // OOP
