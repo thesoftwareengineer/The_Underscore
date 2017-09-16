@@ -63,39 +63,6 @@
     }
   }
 
-  // Generic binary search with callback and toInsert option
-  var binarySearch = function(array, value, cb, toInsert) {
-    if (array.length === 0) {
-      return 0;
-    }
-    if (!cb) {
-      cb = function(n) {
-        return n;
-      }
-    }
-    var min = 0;
-    var max = array.length - 1;
-    var curr;
-    var currIdx;
-    while (min <= max) {
-      currIdx = (max + min) / 2 | 0;
-      curr = array[currIdx];
-
-      if (cb(curr) < cb(value)) {
-        min = currIdx + 1;
-      } else if (cb(curr) > cb(value)) {
-        max = currIdx - 1
-      } else {
-        return currIdx;
-      }
-    }
-    if (!toInsert) {
-      return -1;
-    } else {
-      return currIdx;
-    }
-  }
-
   var randInt = function(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
@@ -354,36 +321,31 @@
 
   // Return first n elements in array by default n = 1
   // Also check for non array types and returns undefined for those
-  _.first = function(array, n) {
-    if (!n) {
-      n = 1;
-    }
+  _.first = _.head = _.take = function(array, n, map) {
+    if (array == null || array.length < 1) return void 0;
+    if (n == null || map) return array[0];
+    return _.initial(array, array.length - n)
+  };
+
+  // Includes all elements of array starting from index
+  // i.e. index = 2 returns slice from 2 to last element
+  _.rest = _.tail = _.drop = function(array, n, map) {
+    if (n == null || map) return array.slice(1, array.length);
     if (array instanceof Array) {
-      if (n > array.length && array.length !== 0) {
-        return array;
+      if (array.length !== 0 && array.length >= n) {
+        return array.slice(n, array.length);
       }
-      if (array.length >= n) {
-        if (n === 1) {
-          return array[0];
-        }
-        return array.slice(0, n);
-      }
-      return void 0;
     }
+    return [];
   };
 
   // Similar to first expcept that it excludes the last n
   // elements. By default n = 1. Also preforms check for
   // non array types.
-  _.initial = function(array, n) {
-    if (!n) {
-      n = 1;
-    }
+  _.initial = function(array, n, map) {
+    if (n == null || map) return array.slice(0, array.length - 1);
     if (array instanceof Array) {
       if (array.length !== 0 && array.length >= n) {
-        if (n === 1) {
-          return array.slice(0, array.length - 1);
-        }
         return array.slice(0, array.length - n);
       }
     }
@@ -392,38 +354,16 @@
 
   // Preforms the reverse of the first function by
   // including the last n elements.
-  _.last = function(array, n) {
-    if (!n) {
-      n = 1;
-    }
-    if (array instanceof Array) {
-      if (n > array.length && array.length !== 0) {
-        return array;
-      }
-      if (array.length !== 0 && array.length >= n) {
-        if (n === 1) {
-          return array.pop();
-        }
-        return array.slice(n, array.length);
-      }
-      return void 0;
-    }
-  };
-
-  // Includes all elements of array starting from index
-  // i.e. index = 2 returns slice from 2 to last element
-  _.rest = function(array, index) {
-    if (!index) {
-      index = 1;
-    }
-    if (array instanceof Array) {
-      return array.slice(index, array.length);
-    }
-    return [];
+  _.last = function(array, n, guard) {
+    if (array == null || array.length < 1) return void 0;
+    if (n == null || guard) return array[array.length - 1];
+    if (n > array.length) return array;
+    return _.rest(array, array.length - n);
   };
 
   // Removes all falsy values from the array.
   _.compact = function(array) {
+    if (_.isObject(array)) array = _.toArray(array);
     if (array instanceof Array) {
       return array.filter(function(n) {
         if (n) {
@@ -439,6 +379,7 @@
   // If the optional shallow argument is true, then
   // then only the first layer of nesting will be removed
   _.flatten = function(array, shallow) {
+    if (_.isObject(array)) array = _.toArray(array);
     var newArr = [];
     if (array instanceof Array) {
       if (shallow) {
@@ -448,7 +389,7 @@
       } else {
         for (var i = 0; i < array.length; i++) {
           if (array[i] instanceof Array) {
-            newArr = newArr.concat(this.flatten(array[i]));
+            newArr = newArr.concat(_.flatten(array[i]));
           } else {
             newArr = newArr.concat(array[i]);
           }
@@ -461,6 +402,7 @@
   // Takes in two arrays and filters out values based
   // on the second array.
   _.without = function(array, values) {
+    if (_.isObject(array)) array = _.toArray(array);
     var newArr = array;
     if (array instanceof Array) {
       for (var i = 1; i < arguments.length; i++) {
@@ -474,91 +416,54 @@
     return [];
   };
 
-  // Takes in several arrays and creates a new array
-  // that creates a new array that contains elements
-  // found in any of the arrays. However, array only
-  // contains the same element once.
-  _.union = function(arrays) {
-    var arr = [];
-    for (var i = 0; i < arguments.length; i++) {
-      if (arguments[i] instanceof Array) {
-        arr = arr.concat(arguments[i]);
-      }
-    }
-    var newArr = [];
-    for (i = 0; i < arr.length; i++) {
-      if (newArr.indexOf(arr[i]) === -1) {
-        newArr.push(arr[i]);
-      }
-    }
-    return newArr;
-  };
+  // Uses binary search to return index at which value should
+  // be insterted at if order is to be sorted
+  _.sortedIndex = function(list, value, iteratee, context) {
+    if (!(list instanceof Array)) return 0;
+    iteratee = _.iteratee(iteratee, context);
+    return binarySearch(list, value, iteratee);
+  }
 
-  // Takes in several arrays creates a new array
-  // that contains all the values that are the
-  // same in all arrays.
-  _.intersection = function(arrays) {
-    if (!(arrays instanceof Array)) {
-      return [];
+  var binarySearch = function(list, value, iteratee) {
+    if (iteratee == null) iteratee = function(n) {
+      return n;
+    };
+    var minIdx = 0,
+      maxIdx = list.length;
+    value = iteratee(value);
+    while (minIdx < maxIdx) {
+      const midIdx = Math.floor((maxIdx + minIdx) / 2);
+      if (iteratee(list[midIdx]) < value) minIdx = midIdx + 1;
+      else maxIdx = midIdx;
     }
-    var arr = arguments[0];
-    for (var i = 1; i < arguments.length; i++) {
-      const arg = arguments[i];
-      if (arg instanceof Array && arr instanceof Array) {
-        arr = arr.filter(function(n) {
-          return arg.indexOf(n) !== -1;
-        });
-      } else {
-        return [];
-      }
-    }
-    return arr;
-  };
-
-  // Returns array that contains only the elements
-  // of the first array that are not present in
-  // the rest of the arrays.
-  _.difference = function(array, others) {
-    if (!(arguments[0] instanceof Array)) {
-      return [];
-    }
-    var arr = arguments[0];
-    for (var i = 1; i < arguments.length; i++) {
-      const arg = arguments[i];
-      if (arg instanceof Array) {
-        arr = arr.filter(function(n) {
-          return arg.indexOf(n) === -1;
-        });
-      }
-    }
-    return arr;
-  };
+    return minIdx;
+  }
 
   // Gets rid of duplicates in array and returns
   // it. When is isSorted is true the creation of
   // new array is easier. There is also the
   // iteratee that can be passed as the criteria
   // for what duplicates mean.
-  _.uniq = function(array, isSorted, iteratee) {
-    if (!(array instanceof Array)) {
-      return [];
-    }
-    if (typeof(isSorted) !== "boolean") {
+  _.uniq = _.unique = function(array, isSorted, iteratee, context) {
+    if (array == null) return [];
+    if (!_.isBoolean(isSorted)) {
+      context = iteratee;
       iteratee = isSorted;
       isSorted = false;
     }
     const unique = [];
     var seen = [];
-    if (iteratee != null) iteratee = _.iteratee(iteratee);
-    for (var i = 0; i < array.length; i++) {
+    const length = array.length;
+    if (iteratee != null) iteratee = _.iteratee(iteratee, context);
+    for (var i = 0; i < length; i++) {
       const value = array[i];
-      const compute = iteratee ? iteratee(value) : value;
+      const compute = iteratee ? iteratee(value, i, array) : value;
       if (isSorted) {
-        if (!i || seen !== compute) {
+        if (seen !== compute) {
           unique.push(value);
         }
         seen = compute;
-      } else if (iteratee !== null) {
+      } else if (iteratee) {
         if (seen.indexOf(compute) === -1) {
           unique.push(value);
           seen.push(compute);
@@ -572,28 +477,74 @@
     return unique;
   };
 
+  // Takes in several arrays creates a new array
+  // that contains all the values that are the
+  // same in all arrays.
+  _.intersection = function(arrays) {
+    if (arrays == null) return [];
+    arrays = !_.isObject(arrays) ? arrays : _.toArray(arrays);
+    var arr = arguments[0];
+    for (var i = 1; i < arguments.length; i++) {
+      const arg = arguments[i];
+      if (_.isArray(arg) && _.isArray(arr)) {
+        arr = arr.filter(function(n) {
+          return arg.indexOf(n) !== -1;
+        });
+      } else {
+        return [];
+      }
+    }
+    return _.uniq(arr);
+  };
+
+  // Takes in several arrays and creates a new array
+  // that creates a new array that contains elements
+  // found in any of the arrays. However, array only
+  // contains the same element once.
+  _.union = function(arrays) {
+    var arr = [];
+    arrays = !_.isObject(arrays) ? arrays : _.toArray(arrays);
+    for (var i = 0; i < arguments.length; i++) {
+      if (arguments[i] instanceof Array) {
+        arr = arr.concat(arguments[i]);
+      }
+    }
+    return _.uniq(arr);
+  };
+
+  // Returns array that contains only the elements
+  // of the first array that are not present in
+  // the rest of the arrays.
+  _.difference = function(array, ...others) {
+    if (array == null) return [];
+    array = !_.isObject(array) ? array : _.toArray(array);
+    for (var i = 0; i < others.length; i++) {
+      const arg = others[i];
+      if (arg instanceof Array) {
+        array = array.filter(function(n) {
+          return arg.indexOf(n) === -1;
+        });
+      }
+    }
+    return array;
+  };
+
   // Joins arrays together with their corresponding
   // postions i.e. [[first elments], [second elements],
   // ... [last elements]]
-  _.zip = function(arrays) {
-    if (!(arrays instanceof Array)) {
-      return [];
-    }
+  _.zip = function(...arrays) {
+    if (arrays == null) return [];
     const zipped = [];
-    const args = [].slice.call(arguments);
-    const length = Math.max(...args.map(function(a) {
-      return a.length;
+    const length = Math.max(...arrays.map(function(a) {
+      if (a) return a.length;
     }));
     for (var i = 0; i < length; i++) {
       const elm = []
-      for (var j = 0; j < args.length; j++) {
-        try {
-          elm.push(args[j][i])
-        } catch (e) {
-          elm.push(undefined);
-        }
+      for (var j = 0; j < arrays.length; j++) {
+        if (arrays[j][i] != null) elm.push(arrays[j][i]);
+        else elm.push(undefined);
       }
-      zipped.push(elm);
+      if (elm.length !== 0) zipped.push(elm);
     }
     return zipped;
   };
@@ -602,21 +553,16 @@
   // first which has first element of all
   // other arrays and so on...
   _.unzip = function(array) {
-    if (!(array instanceof Array)) {
-      return [];
-    }
+    if (array == null) return [];
     const unzipped = [];
     const length = Math.max(...array.map(function(a) {
-      return a.length;
+      if (a) return a.length;
     }));
-    for (var i = 0; i < array.length; i++) {
-      const elm = []
-      for (var j = 0; j < length; j++) {
-        try {
-          elm.push(array[j][i])
-        } catch (e) {
-          elm.push(undefined);
-        }
+    for (var i = 0; i < length; i++) {
+      const elm = [];
+      for (var j = 0; j < array.length; j++) {
+        if (array[j][i] != null) elm.push(array[j][i])
+        else elm.push(undefined);
       }
       unzipped.push(elm);
     }
@@ -628,9 +574,7 @@
   // [key, values], or two list one containing
   // either keys or values.
   _.object = function(list, values) {
-    if (!(list instanceof Array)) {
-      return {};
-    }
+    if (!_.isArray(list)) return {};
     const obj = {};
     for (var i = 0; i < list.length; i++) {
       if (values) {
@@ -645,319 +589,308 @@
   // Returns indexOf the value and returns -1
   // if values does not exist.
   _.indexOf = function(array, value, isSorted) {
-    if (!(array instanceof Array)) {
-      return -1;
-    }
+    if (!_.isArray(array) || array.length < 1) return -1;
+    array = !_.isObject(array) ? array : _.toArray(array);
     if (isSorted) {
       return binarySearch(array, value);
     } else {
       return array.indexOf(value);
     }
   };
-
-  // Last occurence of a value in array
-  _.lastIndexOf = function(array, value, fromIndex) {
-    if (!(array instanceof Array)) {
-      return -1;
-    }
-    if (!fromIndex) fromIndex = array.length - 1;
-    for (var i = fromIndex; i >= 0; i--) {
-      if (array[i] == value) return i;
-    }
-    return -1;
-  };
-
-  // Uses binary search to return index at which value should
-  // be insterted at if order is to be sorted
-  _.sortedIndex = function(list, value, iteratee) {
-    if (!(list instanceof Array)) {
-      return 0;
-    }
-    if (iteratee != null) iteratee = _.iteratee(iteratee);
-    return binarySearch(list, value, iteratee, true);
-  };
-
-  // Similar to indexOf, but uses predicate as search criteria
-  _.findIndex = function(array, predicate) {
-    if (!(array instanceof Array)) {
-      return -1;
-    }
-    if (predicate != null) predicate = genPredicate(predicate);
-    for (var i = 0; i < array.length; i++) {
-      if (predicate(array[i])) {
-        return i;
-      }
-    }
-    return -1;
-  };
-
-  // Like findIndex but searches in reverse
-  _.findLastIndex = function(array, predicate) {
-    if (!(array instanceof Array) || array.length === 0) {
-      return -1;
-    }
-    if (predicate != null) predicate = genPredicate(predicate);
-    for (var i = array.length - 1; i >= 0; i++) {
-      if (predicate(array[i])) {
-        return i;
-      }
-    }
-    return -1;
-  };
-
-  // Creates array containing number from [start, end)
-  // Incrementing by step.
-  _.range = function(start, stop, step) {
-    if (arguments.length === 1) {
-      stop = start;
-      start = 0;
-    }
-    if (!step) {
-      step = 1;
-    }
-    const numbers = [];
-    if (step >= 1) {
-      for (var i = start; i < stop; i += step) {
-        numbers.push(i);
-      }
-    } else {
-      for (var i = start; i > stop; i += step) {
-        numbers.push(i);
-      }
-    }
-    return numbers;
-  };
-
-  /**Functions**/
-
-  // Binds function to an object and can pass arguments
-  // to pre-fill some or all arguments.
-  _.bind = function(func, object, ...args) {
-    if (!(func instanceof Function)) throw new TypeError("Bind must be called on a function", "underscore.js");
-    if (object instanceof Object) {
-      object["getFunc"] = func;
-      func = object.getFunc;
-    }
-    var args = Array.prototype.slice.call(args);
-    return func.bind.apply(func, [object].concat(args));
-  };
-
-  // Binds several methods to an object run in conext invoked.
-  _.bindAll = function(object, ...methods) {
-    if (!object || methods.length === 0) throw new Error("bindAll must be passed function names");
-    for (var i = 0; i < methods.length; i++) {
-      object[methods[i]] = object[methods[i]].bind(object);
-    }
-    return object;
-  };
-
-  // Partially fill in arguments in a function
-  _.partial = function(func) {
-    var args = Array.prototype.slice.call(arguments, 1);
-    const part = function() {
-      if (!_.partial.placeholder) _.partial.placeholder = _;
-      const length = args.length;
-      var pos = 0;
-      var outArgs = Array(length);
-      for (var i = 0; i < length; i++) {
-        outArgs[i] = args[i] === _.partial.placeholder ? arguments[pos++] : args[i];
-      }
-      while (pos < arguments.length) outArgs.push(arguments[pos++]);
-      if (!(this instanceof part)) {
-        return func.apply(this, outArgs);
-      } else {
-        const self = Object.create(func.prototype);
-        const result = func.apply(self, outArgs);
-        if ((typeof result === 'function' || typeof result === 'object' && !!result)) return result;
-        return self;
-      }
-    }
-    return part;
-  };
-
-  // Function that takes in a function and stores in results
-  // in a cache so that subsequent calls can be looked up
-  // instead of invoking function again.
-  _.memoize = function(func, hashFunction) {
-    const memoized = function() {
-      const cache = memoized.cache;
-      const argument = hashFunction ? hashFunction.apply(this, arguments) : Array.prototype.slice.call(arguments);
-      var result = cache[argument];
-      if (!cache.hasOwnProperty(argument)) {
-        result = func.apply(func, arguments);
-        cache[argument] = result;
-      }
-      return result;
-    }.bind(this);
-    memoized.cache = {};
-    return memoized;
-  };
-
-  // Simple delay function that waits for execution of function
-  // the same number of seconds.
-  // delay: function(func, wait, ...args) {
-  //   wait += new Date().getTime();
-  //   while (new Date() < wait) {}
-  //   return func.apply(func, args);
-  // },
-
-  // Second version of delay trying to use setTimeout this
-  // time, inspired by what I learned from
-  _.delay = function(func, wait, ...args) {
-    const delayed = function() {
-      return func.apply(func, args);
-    }
-    return setTimeout(delayed, wait);
-  };
-
-  // Defers invoking function until call stack has cleared.
-  _.defer = function(func, ...args) {
-    const delayed = function() {
-      return func.apply(func, args);
-    }
-    setTimeout(delayed, 0);
-  };
-
-  // This function creates throttled verstion of Functions
-  // calls original function at most once per wait.
-  _.throttle = function(func, wait, options) {
-    var result, context, args, timeout;
-    var prev = 0;
-    if (!options) options = {};
-
-    const trailing = function() {
-      prev = options.leading === false ? 0 : new Date().getTime();
-      timeout = null;
-      result = func.apply(context, args);
-      if (!timeout) context = args = null;
-    };
-
-    const throttled = function() {
-      const now = new Date().getTime();
-      if (!prev && options.leading === false) prev = now;
-      const remaining = wait - (now - prev);
-      context = this;
-      args = arguments;
-      if (remaining <= 0 || remaining > wait) {
-        if (timeout) {
-          clearTimeout(timeout);
-          timeout = null;
-        }
-        prev = now;
-        result = func.apply(context, args);
-        if (!timeout) context = args = null;
-      } else if (!timeout && options.trailing !== false) {
-        timeout = setTimeout(trailing, remaining);
-      }
-      return result;
-    };
-
-    throttled.cancel = function() {
-      clearTimeout(timeout);
-      prev = 0;
-      timeout = context = args = null;
-    };
-
-    return throttled;
-  };
-
-  // Did not understand debounce so used version found in:
-  // https://davidwalsh.name/function-debounce with a few
-  // modification to make it more straightforward.
-  // Similar to throttle except that call won't run unless
-  // Wait time has passed after LAST call.
-  _.debounce = function(func, wait, immediate) {
-    var timeout, result;
-    const debounced = function() {
-      const args = arguments;
-      const context = this;
-      const cb = function() {
-        timeout = null;
-        if (!immediate) result = func.apply(context, args);
-      }
-      const call = immediate && !timeout;
-      clearTimeout(timeout);
-      timeout = setTimeout(cb, wait);
-      if (call) result = func.apply(context, args);
-      return result;
-    }
-
-    debounced.cancel = function() {
-      clearTimeout(timeout);
-      timeout = null;
-    }
-    return debounced;
-  };
-
-  // Version of function can only run once.
-  _.once = function(func) {
-    var ran = false;
-    var result;
-    return function() {
-      if (!ran) {
-        ran = true;
-        result = func.apply(func, arguments);
-        return result;
-      } else {
-        return result;
-      }
-    }
-  };
-
-  // Will only run function after n times.
-  _.after = function(count, func) {
-    var calls = count;
-    return function() {
-      if (calls === 1 || calls === 0) {
-        return func.apply(func, arguments);
-      } else {
-        calls--;
-        return;
-      }
-    }
-  };
-
-  // Opposite of the after function will
-  // only run n times.
-  _.before = function(count, func) {
-    var calls = 1;
-    return function() {
-      if (calls < count) {
-        calls++;
-        return func.apply(func, arguments);
-      } else {
-        calls++;
-        return;
-      }
-    }
-  };
-
-  // Wraps function in another function,
-  // and passes it as the first argument.
-  _.wrap = function(func, wrapper) {
-    // return wrapper.bind.apply(wrapper, [null].concat(func));
-    // Alternate way
-    return _.partial(wrapper, func)
-  };
-
-  // Returns negated version of predicate function
-  // simple implementation.
-  _.negate = function(predicate) {
-    return function() {
-      return !predicate.apply(predicate, arguments);
-    }
-  };
-
-  _.compose = function(...func) {
-    return function() {
-      var i = func.length - 1;
-      var mega = func[i].apply(func[i], arguments);
-      for (i--; i >= 0; i--) {
-        mega = func[i].call(func[i], mega);
-      }
-      return mega;
-    }
-  };
+  //
+  // // Last occurence of a value in array
+  // _.lastIndexOf = function(array, value, fromIndex) {
+  //   if (!(array instanceof Array)) {
+  //     return -1;
+  //   }
+  //   if (!fromIndex) fromIndex = array.length - 1;
+  //   for (var i = fromIndex; i >= 0; i--) {
+  //     if (array[i] == value) return i;
+  //   }
+  //   return -1;
+  // };
+  //
+  // // Similar to indexOf, but uses predicate as search criteria
+  // _.findIndex = function(array, predicate) {
+  //   if (!(array instanceof Array)) {
+  //     return -1;
+  //   }
+  //   if (predicate != null) predicate = genPredicate(predicate);
+  //   for (var i = 0; i < array.length; i++) {
+  //     if (predicate(array[i])) {
+  //       return i;
+  //     }
+  //   }
+  //   return -1;
+  // };
+  //
+  // // Like findIndex but searches in reverse
+  // _.findLastIndex = function(array, predicate) {
+  //   if (!(array instanceof Array) || array.length === 0) {
+  //     return -1;
+  //   }
+  //   if (predicate != null) predicate = genPredicate(predicate);
+  //   for (var i = array.length - 1; i >= 0; i++) {
+  //     if (predicate(array[i])) {
+  //       return i;
+  //     }
+  //   }
+  //   return -1;
+  // };
+  //
+  // // Creates array containing number from [start, end)
+  // // Incrementing by step.
+  // _.range = function(start, stop, step) {
+  //   if (arguments.length === 1) {
+  //     stop = start;
+  //     start = 0;
+  //   }
+  //   if (!step) {
+  //     step = 1;
+  //   }
+  //   const numbers = [];
+  //   if (step >= 1) {
+  //     for (var i = start; i < stop; i += step) {
+  //       numbers.push(i);
+  //     }
+  //   } else {
+  //     for (var i = start; i > stop; i += step) {
+  //       numbers.push(i);
+  //     }
+  //   }
+  //   return numbers;
+  // };
+  //
+  // /**Functions**/
+  //
+  // // Binds function to an object and can pass arguments
+  // // to pre-fill some or all arguments.
+  // _.bind = function(func, object, ...args) {
+  //   if (!(func instanceof Function)) throw new TypeError("Bind must be called on a function", "underscore.js");
+  //   if (object instanceof Object) {
+  //     object["getFunc"] = func;
+  //     func = object.getFunc;
+  //   }
+  //   var args = Array.prototype.slice.call(args);
+  //   return func.bind.apply(func, [object].concat(args));
+  // };
+  //
+  // // Binds several methods to an object run in conext invoked.
+  // _.bindAll = function(object, ...methods) {
+  //   if (!object || methods.length === 0) throw new Error("bindAll must be passed function names");
+  //   for (var i = 0; i < methods.length; i++) {
+  //     object[methods[i]] = object[methods[i]].bind(object);
+  //   }
+  //   return object;
+  // };
+  //
+  // // Partially fill in arguments in a function
+  // _.partial = function(func) {
+  //   var args = Array.prototype.slice.call(arguments, 1);
+  //   const part = function() {
+  //     if (!_.partial.placeholder) _.partial.placeholder = _;
+  //     const length = args.length;
+  //     var pos = 0;
+  //     var outArgs = Array(length);
+  //     for (var i = 0; i < length; i++) {
+  //       outArgs[i] = args[i] === _.partial.placeholder ? arguments[pos++] : args[i];
+  //     }
+  //     while (pos < arguments.length) outArgs.push(arguments[pos++]);
+  //     if (!(this instanceof part)) {
+  //       return func.apply(this, outArgs);
+  //     } else {
+  //       const self = Object.create(func.prototype);
+  //       const result = func.apply(self, outArgs);
+  //       if ((typeof result === 'function' || typeof result === 'object' && !!result)) return result;
+  //       return self;
+  //     }
+  //   }
+  //   return part;
+  // };
+  //
+  // // Function that takes in a function and stores in results
+  // // in a cache so that subsequent calls can be looked up
+  // // instead of invoking function again.
+  // _.memoize = function(func, hashFunction) {
+  //   const memoized = function() {
+  //     const cache = memoized.cache;
+  //     const argument = hashFunction ? hashFunction.apply(this, arguments) : Array.prototype.slice.call(arguments);
+  //     var result = cache[argument];
+  //     if (!cache.hasOwnProperty(argument)) {
+  //       result = func.apply(func, arguments);
+  //       cache[argument] = result;
+  //     }
+  //     return result;
+  //   }.bind(this);
+  //   memoized.cache = {};
+  //   return memoized;
+  // };
+  //
+  // // Simple delay function that waits for execution of function
+  // // the same number of seconds.
+  // // delay: function(func, wait, ...args) {
+  // //   wait += new Date().getTime();
+  // //   while (new Date() < wait) {}
+  // //   return func.apply(func, args);
+  // // },
+  //
+  // // Second version of delay trying to use setTimeout this
+  // // time, inspired by what I learned from
+  // _.delay = function(func, wait, ...args) {
+  //   const delayed = function() {
+  //     return func.apply(func, args);
+  //   }
+  //   return setTimeout(delayed, wait);
+  // };
+  //
+  // // Defers invoking function until call stack has cleared.
+  // _.defer = function(func, ...args) {
+  //   const delayed = function() {
+  //     return func.apply(func, args);
+  //   }
+  //   setTimeout(delayed, 0);
+  // };
+  //
+  // // This function creates throttled verstion of Functions
+  // // calls original function at most once per wait.
+  // _.throttle = function(func, wait, options) {
+  //   var result, context, args, timeout;
+  //   var prev = 0;
+  //   if (!options) options = {};
+  //
+  //   const trailing = function() {
+  //     prev = options.leading === false ? 0 : new Date().getTime();
+  //     timeout = null;
+  //     result = func.apply(context, args);
+  //     if (!timeout) context = args = null;
+  //   };
+  //
+  //   const throttled = function() {
+  //     const now = new Date().getTime();
+  //     if (!prev && options.leading === false) prev = now;
+  //     const remaining = wait - (now - prev);
+  //     context = this;
+  //     args = arguments;
+  //     if (remaining <= 0 || remaining > wait) {
+  //       if (timeout) {
+  //         clearTimeout(timeout);
+  //         timeout = null;
+  //       }
+  //       prev = now;
+  //       result = func.apply(context, args);
+  //       if (!timeout) context = args = null;
+  //     } else if (!timeout && options.trailing !== false) {
+  //       timeout = setTimeout(trailing, remaining);
+  //     }
+  //     return result;
+  //   };
+  //
+  //   throttled.cancel = function() {
+  //     clearTimeout(timeout);
+  //     prev = 0;
+  //     timeout = context = args = null;
+  //   };
+  //
+  //   return throttled;
+  // };
+  //
+  // // Did not understand debounce so used version found in:
+  // // https://davidwalsh.name/function-debounce with a few
+  // // modification to make it more straightforward.
+  // // Similar to throttle except that call won't run unless
+  // // Wait time has passed after LAST call.
+  // _.debounce = function(func, wait, immediate) {
+  //   var timeout, result;
+  //   const debounced = function() {
+  //     const args = arguments;
+  //     const context = this;
+  //     const cb = function() {
+  //       timeout = null;
+  //       if (!immediate) result = func.apply(context, args);
+  //     }
+  //     const call = immediate && !timeout;
+  //     clearTimeout(timeout);
+  //     timeout = setTimeout(cb, wait);
+  //     if (call) result = func.apply(context, args);
+  //     return result;
+  //   }
+  //
+  //   debounced.cancel = function() {
+  //     clearTimeout(timeout);
+  //     timeout = null;
+  //   }
+  //   return debounced;
+  // };
+  //
+  // // Version of function can only run once.
+  // _.once = function(func) {
+  //   var ran = false;
+  //   var result;
+  //   return function() {
+  //     if (!ran) {
+  //       ran = true;
+  //       result = func.apply(func, arguments);
+  //       return result;
+  //     } else {
+  //       return result;
+  //     }
+  //   }
+  // };
+  //
+  // // Will only run function after n times.
+  // _.after = function(count, func) {
+  //   var calls = count;
+  //   return function() {
+  //     if (calls === 1 || calls === 0) {
+  //       return func.apply(func, arguments);
+  //     } else {
+  //       calls--;
+  //       return;
+  //     }
+  //   }
+  // };
+  //
+  // // Opposite of the after function will
+  // // only run n times.
+  // _.before = function(count, func) {
+  //   var calls = 1;
+  //   return function() {
+  //     if (calls < count) {
+  //       calls++;
+  //       return func.apply(func, arguments);
+  //     } else {
+  //       calls++;
+  //       return;
+  //     }
+  //   }
+  // };
+  //
+  // // Wraps function in another function,
+  // // and passes it as the first argument.
+  // _.wrap = function(func, wrapper) {
+  //   // return wrapper.bind.apply(wrapper, [null].concat(func));
+  //   // Alternate way
+  //   return _.partial(wrapper, func)
+  // };
+  //
+  // // Returns negated version of predicate function
+  // // simple implementation.
+  // _.negate = function(predicate) {
+  //   return function() {
+  //     return !predicate.apply(predicate, arguments);
+  //   }
+  // };
+  //
+  // _.compose = function(...func) {
+  //   return function() {
+  //     var i = func.length - 1;
+  //     var mega = func[i].apply(func[i], arguments);
+  //     for (i--; i >= 0; i--) {
+  //       mega = func[i].call(func[i], mega);
+  //     }
+  //     return mega;
+  //   }
+  // };
 
   // Generate appropriate iteratee cb function. Note: base of
   // orginal as I had no idea what this functions purpose was.
