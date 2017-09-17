@@ -588,28 +588,46 @@
 
   // Returns indexOf the value and returns -1
   // if values does not exist.
-  _.indexOf = function(array, value, isSorted) {
-    if (!_.isArray(array) || array.length < 1) return -1;
+  _.indexOf = function(array, value, fromIndex, isSorted) {
+    if (_.isBoolean(fromIndex)) isSorted = fromIndex, fromIndex = null;
+    if (!array || array.length < 1) return -1;
     array = !_.isObject(array) ? array : _.toArray(array);
+    return finder(array, value, fromIndex, isSorted);
+  };
+
+  // Helper function for both indexOf and lastIndexOf
+  const finder = function(array, value, fromIndex, isSorted, last) {
     if (isSorted) {
-      return binarySearch(array, value);
+      const idx = binarySearch(array, value, function(n) {
+        if (_.isNaN(value)) return -Infinity;
+        return n;
+      });
+      return array[idx] === value || (_.isNaN(array[i]) && _.isNaN(value)) ? idx : -1;
     } else {
-      return array.indexOf(value);
+      var i = 0;
+      if (fromIndex != null && fromIndex >= 0) i = fromIndex;
+      for (i; i < array.length; i++) {
+        if (array[i] === value || (_.isNaN(array[i]) && _.isNaN(value))) return i;
+      }
+      return -1;
     }
   };
-  //
-  // // Last occurence of a value in array
-  // _.lastIndexOf = function(array, value, fromIndex) {
-  //   if (!(array instanceof Array)) {
-  //     return -1;
-  //   }
-  //   if (!fromIndex) fromIndex = array.length - 1;
-  //   for (var i = fromIndex; i >= 0; i--) {
-  //     if (array[i] == value) return i;
-  //   }
-  //   return -1;
-  // };
-  //
+
+  // Last occurence of a value in array
+  _.lastIndexOf = function(array, value, fromIndex) {
+    if (!array || array.length < 1) return -1;
+    var next = finder(array, value, fromIndex);
+    fromIndex = next;
+    for (var i = 0; i < array.length; i++) {
+      console.log(next, array);
+      next = finder(array, value, fromIndex)
+      if (next !== -1) {
+        fromIndex = next;
+      }
+    }
+    return fromIndex;
+  };
+
   // // Similar to indexOf, but uses predicate as search criteria
   // _.findIndex = function(array, predicate) {
   //   if (!(array instanceof Array)) {
